@@ -25,16 +25,16 @@ As before let's start with cloning [the course's Github](https://github.com/baha
 import sys
 import os
 
-if not os.path.exists(os.getcwd()+'/introduction_to_ML'):
-    !git clone https://github.com/bahareh368/introduction_to_ML.git
-else:
-    print('"/introduction_to_ML" already exists. If you want to update this folder for:\
-    Colab: factory reset your runtime and run this cell again.\
-    Jupytor Notebook: Delete the folder in your current directory and run this cell again.')
-    # append the folder to sys.path and import costume modeules
+# if not os.path.exists(os.getcwd()+'/introduction_to_ML'):
+#     !git clone https://github.com/bahareh368/introduction_to_ML.git
+# else:
+#     print('"/introduction_to_ML" already exists. If you want to update this folder for:\
+#     Colab: factory reset your runtime and run this cell again.\
+#     Jupytor Notebook: Delete the folder in your current directory and run this cell again.')
+#     # append the folder to sys.path and import costume modeules
 
-sys.path.append("introduction_to_ML")
-import intro2ML_functions as i2ml
+# sys.path.append("introduction_to_ML")
+# import intro2ML_functions as i2ml
 
 """## 1. Introduction
 Neuron stars appear when stars run out of fuel and collapse. This creates a large explosion in space, also known as a supernova. Pulsars are a special type of such Neuron stars. Pulsars namely produce a certain type of radio emmision, which is detectable on earth. Because of this reason, scientists are interested in analyzing Pulsars. However, performing analyses on stars is costly and time-consuming. This means that it is of vital importance that candidate Pulsar stars are detected before the analysis itself. Doing this by hand, though, is not trivial. (You can find more information on pulsar stars [here](https://www.space.com/32661-pulsars.html) and [here](https://imagine.gsfc.nasa.gov/science/objects/neutron_stars1.html) )
