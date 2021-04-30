@@ -1,0 +1,133 @@
+BRON: KONINKLIJK NEDERLANDS METEOROLOGISCH INSTITUUT (KNMI)
+Opmerking: door stationsverplaatsingen en veranderingen in waarneemmethodieken zijn deze tijdreeksen van uurwaarden mogelijk inhomogeen! Dat betekent dat deze reeks van gemeten waarden niet geschikt is voor trendanalyse. Voor studies naar klimaatverandering verwijzen we naar de gehomogeniseerde dagreeksen <http://www.knmi.nl/nederland-nu/klimatologie/daggegevens> of de Centraal Nederland Temperatuur <http://www.knmi.nl/kennis-en-datacentrum/achtergrond/centraal-nederland-temperatuur-cnt>.
+
+SOURCE: ROYAL NETHERLANDS METEOROLOGICAL INSTITUTE (KNMI)
+Comment: These time series are inhomogeneous because of station relocations and changes in observation techniques. As a result, these series are not suitable for trend analysis. For climate change studies we refer to the homogenized series of daily data <http://www.knmi.nl/nederland-nu/klimatologie/daggegevens> or the Central Netherlands Temperature <http://www.knmi.nl/kennis-en-datacentrum/achtergrond/centraal-nederland-temperatuur-cnt>.
+
+YYYYMMDD  = datum (YYYY=jaar,MM=maand,DD=dag) / date (YYYY=year,MM=month,DD=day)
+HH        = tijd (HH=uur, UT.12 UT=13 MET, 14 MEZT. Uurvak 05 loopt van 04.00 UT tot 5.00 UT / time (HH uur/hour, UT. 12 UT=13 MET, 14 MEZT. Hourly division 05 runs from 04.00 UT to 5.00 UT
+DD        = Windrichting (in graden) gemiddeld over de laatste 10 minuten van het afgelopen uur (360=noord, 90=oost, 180=zuid, 270=west, 0=windstil 990=veranderlijk. Zie http://www.knmi.nl/kennis-en-datacentrum/achtergrond/klimatologische-brochures-en-boeken / Mean wind direction (in degrees) during the 10-minute period preceding the time of observation (360=north, 90=east, 180=south, 270=west, 0=calm 990=variable)
+FH        = Uurgemiddelde windsnelheid (in 0.1 m/s). Zie http://www.knmi.nl/kennis-en-datacentrum/achtergrond/klimatologische-brochures-en-boeken / Hourly mean wind speed (in 0.1 m/s)
+FF        = Windsnelheid (in 0.1 m/s) gemiddeld over de laatste 10 minuten van het afgelopen uur / Mean wind speed (in 0.1 m/s) during the 10-minute period preceding the time of observation 
+FX        = Hoogste windstoot (in 0.1 m/s) over het afgelopen uurvak / Maximum wind gust (in 0.1 m/s) during the hourly division
+T         = Temperatuur (in 0.1 graden Celsius) op 1.50 m hoogte tijdens de waarneming / Temperature (in 0.1 degrees Celsius) at 1.50 m at the time of observation
+T10N      = Minimumtemperatuur (in 0.1 graden Celsius) op 10 cm hoogte in de afgelopen 6 uur / Minimum temperature (in 0.1 degrees Celsius) at 0.1 m in the preceding 6-hour period
+TD        = Dauwpuntstemperatuur (in 0.1 graden Celsius) op 1.50 m hoogte tijdens de waarneming / Dew point temperature (in 0.1 degrees Celsius) at 1.50 m at the time of observation
+SQ        = Duur van de zonneschijn (in 0.1 uren) per uurvak, berekend uit globale straling  (-1 for <0.05 uur) / Sunshine duration (in 0.1 hour) during the hourly division, calculated from global radiation (-1 for <0.05 hour)
+Q         = Globale straling (in J/cm2) per uurvak / Global radiation (in J/cm2) during the hourly division
+DR        = Duur van de neerslag (in 0.1 uur) per uurvak / Precipitation duration (in 0.1 hour) during the hourly division
+RH        = Uursom van de neerslag (in 0.1 mm) (-1 voor <0.05 mm) / Hourly precipitation amount (in 0.1 mm) (-1 for <0.05 mm)
+P         = Luchtdruk (in 0.1 hPa) herleid naar zeeniveau, tijdens de waarneming / Air pressure (in 0.1 hPa) reduced to mean sea level, at the time of observation
+VV        = Horizontaal zicht tijdens de waarneming (0=minder dan 100m, 1=100-200m, 2=200-300m,..., 49=4900-5000m, 50=5-6km, 56=6-7km, 57=7-8km, ..., 79=29-30km, 80=30-35km, 81=35-40km,..., 89=meer dan 70km) / Horizontal visibility at the time of observation (0=less than 100m, 1=100-200m, 2=200-300m,..., 49=4900-5000m, 50=5-6km, 56=6-7km, 57=7-8km, ..., 79=29-30km, 80=30-35km, 81=35-40km,..., 89=more than 70km)
+N         = Bewolking (bedekkingsgraad van de bovenlucht in achtsten), tijdens de waarneming (9=bovenlucht onzichtbaar) / Cloud cover (in octants), at the time of observation (9=sky invisible)
+U         = Relatieve vochtigheid (in procenten) op 1.50 m hoogte tijdens de waarneming / Relative atmospheric humidity (in percents) at 1.50 m at the time of observation
+WW        = Weercode (00-99), visueel(WW) of automatisch(WaWa) waargenomen, voor het actuele weer of het weer in het afgelopen uur. Zie http://bibliotheek.knmi.nl/scholierenpdf/weercodes_Nederland / Present weather code (00-99), description for the hourly division.
+IX        = Weercode indicator voor de wijze van waarnemen op een bemand of automatisch station (1=bemand gebruikmakend van code uit visuele waarnemingen, 2,3=bemand en weggelaten (geen belangrijk weersverschijnsel, geen gegevens), 4=automatisch en opgenomen (gebruikmakend van code uit visuele waarnemingen), 5,6=automatisch en weggelaten (geen belangrijk weersverschijnsel, geen gegevens), 7=automatisch gebruikmakend van code uit automatische waarnemingen) / Indicator present weather code (1=manned and recorded (using code from visual observations), 2,3=manned and omitted (no significant weather phenomenon to report, not available), 4=automatically recorded (using code from visual observations), 5,6=automatically omitted (no significant weather phenomenon to report, not available), 7=automatically set (using code from automated observations)
+M         = Mist 0=niet voorgekomen, 1=wel voorgekomen in het voorgaande uur en/of tijdens de waarneming / Fog 0=no occurrence, 1=occurred during the preceding hour and/or at the time of observation
+R         = Regen 0=niet voorgekomen, 1=wel voorgekomen in het voorgaande uur en/of tijdens de waarneming / Rainfall 0=no occurrence, 1=occurred during the preceding hour and/or at the time of observation
+S         = Sneeuw 0=niet voorgekomen, 1=wel voorgekomen in het voorgaande uur en/of tijdens de waarneming / Snow 0=no occurrence, 1=occurred during the preceding hour and/or at the time of observation
+O         = Onweer 0=niet voorgekomen, 1=wel voorgekomen in het voorgaande uur en/of tijdens de waarneming / Thunder  0=no occurrence, 1=occurred during the preceding hour and/or at the time of observation
+Y         = IJsvorming 0=niet voorgekomen, 1=wel voorgekomen in het voorgaande uur en/of tijdens de waarneming / Ice formation 0=no occurrence, 1=occurred during the preceding hour and/or at the time of observation
+
+# STN,YYYYMMDD,   HH,   DD,   FH,   FF,   FX,    T, T10N,   TD,   SQ,    Q,   DR,   RH,    P,   VV,    N,    U,   WW,   IX,    M,    R,    S,    O,    Y
+
+  344,20110101,    1,  240,   40,   40,   60,   52,     ,   48,    0,    0,    0,    0,10223,   13,    8,   97,   20,    7,    1,    0,    0,    0,    0
+  344,20110101,    2,  280,   40,   40,   70,   50,     ,   44,    0,    0,    0,    0,10220,   50,    8,   96,   10,    7,    0,    0,    0,    0,    0
+  344,20110101,    3,  270,   40,   30,   60,   49,     ,   41,    0,    0,    0,    0,10217,   57,    8,   95,   10,    7,    0,    0,    0,    0,    0
+  344,20110101,    4,  280,   40,   40,   60,   50,     ,   38,    0,    0,    0,    0,10213,   58,    8,   92,   10,    7,    0,    0,    0,    0,    0
+  344,20110101,    5,  280,   40,   40,   60,   51,     ,   38,    0,    0,    0,    0,10211,   60,    8,   91,     ,    5,    0,    0,    0,    0,    0
+  344,20110101,    6,  270,   40,   40,   60,   52,   43,   37,    0,    0,    0,    0,10205,   58,    8,   90,   10,    7,    0,    0,    0,    0,    0
+  344,20110101,    7,  270,   40,   40,   60,   52,     ,   40,    0,    0,    0,    0,10207,   50,    8,   92,   10,    7,    0,    0,    0,    0,    0
+  344,20110101,    8,  270,   40,   40,   70,   53,     ,   45,    0,    0,    0,   -1,10207,   37,    8,   95,   22,    7,    0,    1,    0,    0,    0
+  344,20110101,    9,  290,   40,   40,   60,   53,     ,   47,    0,    2,    6,    2,10210,   17,    8,   96,   52,    7,    0,    1,    0,    0,    0
+  344,20110101,   10,  290,   40,   40,   60,   56,     ,   51,    0,    7,    7,    2,10211,   36,    8,   97,   81,    7,    0,    1,    0,    0,    0
+  344,20110101,   11,  320,   40,   30,   70,   57,     ,   46,    0,   20,    6,    3,10211,   64,    7,   93,   23,    7,    0,    1,    0,    0,    0
+  344,20110101,   12,  330,   40,   40,   80,   64,   47,   36,    2,   43,    0,    0,10210,   65,    8,   82,    3,    7,    0,    0,    0,    0,    0
+  344,20110101,   13,  330,   50,   50,   90,   56,     ,   27,    0,   30,    0,    0,10209,   65,    7,   82,     ,    5,    0,    0,    0,    0,    0
+  344,20110101,   14,  340,   60,   40,   80,   55,     ,   22,    8,   37,    0,    0,10211,   66,    7,   79,     ,    5,    0,    0,    0,    0,    0
+  344,20110101,   15,  340,   50,   40,   80,   49,     ,   18,   10,   25,    0,    0,10215,   66,    2,   80,     ,    5,    0,    0,    0,    0,    0
+  344,20110101,   16,  340,   30,   30,   60,   38,     ,   17,    0,    3,    0,    0,10220,   65,    8,   86,     ,    5,    0,    0,    0,    0,    0
+  344,20110101,   17,  330,   30,   30,   40,   19,     ,    4,    0,    0,    0,    0,10220,   65,    2,   90,     ,    5,    0,    0,    0,    0,    0
+  344,20110101,   18,  340,   30,   30,   50,   27,   -8,    8,    0,    0,    0,    0,10224,   68,    2,   87,     ,    5,    0,    0,    0,    0,    0
+  344,20110101,   19,  320,   20,   20,   50,   13,     ,    0,    0,    0,    0,    0,10227,   65,    0,   91,     ,    5,    0,    0,    0,    0,    0
+  344,20110101,   20,  310,   20,   30,   40,    0,     ,  -11,    0,    0,    0,    0,10229,   64,    0,   92,     ,    5,    0,    0,    0,    0,    0
+  344,20110101,   21,  300,   20,   20,   40,   -4,     ,  -12,    0,    0,    0,    0,10231,   64,    3,   94,     ,    5,    0,    0,    0,    0,    0
+  344,20110101,   22,  280,   10,   10,   30,    8,     ,    1,    0,    0,    0,    0,10232,   63,    8,   95,     ,    5,    0,    0,    0,    0,    0
+  344,20110101,   23,  330,   20,   30,   30,    7,     ,   -5,    0,    0,    0,    0,10233,   65,    8,   92,     ,    5,    0,    0,    0,    0,    0
+  344,20110101,   24,  330,   20,   30,   40,   19,  -54,    6,    0,    0,    0,    0,10233,   65,    8,   91,     ,    5,    0,    0,    0,    0,    0
+  344,20110102,    1,  320,   30,   30,   50,   20,     ,    5,    0,    0,    0,    0,10232,   70,    8,   90,     ,    5,    0,    0,    0,    0,    0
+  344,20110102,    2,  300,   30,   30,   60,   17,     ,   -5,    0,    0,    0,   -1,10234,   70,    8,   85,   22,    7,    0,    1,    0,    0,    0
+  344,20110102,    3,  330,   10,   10,   30,   14,     ,   -7,    0,    0,    0,    0,10235,   70,    6,   86,    1,    7,    0,    0,    0,    0,    0
+  344,20110102,    4,  310,   20,   30,   40,   -1,     ,  -16,    0,    0,    0,    0,10234,   70,    5,   88,     ,    5,    0,    0,    0,    0,    0
+  344,20110102,    5,  300,   30,   30,   40,   -4,     ,  -25,    0,    0,    0,    0,10234,   70,    4,   84,     ,    5,    0,    0,    0,    0,    0
+  344,20110102,    6,  320,   40,   30,   60,   21,  -47,    4,    0,    0,    0,   -1,10236,   65,    8,   88,   51,    7,    0,    1,    0,    0,    0
+  344,20110102,    7,  300,   40,   30,   60,   11,     ,   -1,    0,    0,    0,   -1,10238,   65,    2,   92,   22,    7,    0,    1,    0,    0,    0
+  344,20110102,    8,  350,   20,   10,   50,   14,     ,    4,    0,    0,    0,    0,10242,   65,    7,   93,     ,    5,    0,    0,    0,    0,    0
+  344,20110102,    9,  250,   10,   10,   30,    0,     ,  -11,    2,    9,    0,   -1,10246,   65,    1,   92,   23,    7,    0,    1,    0,    0,    0
+  344,20110102,   10,  300,   20,   20,   30,   36,     ,   20,   10,   41,    0,    0,10250,   70,    6,   89,     ,    5,    0,    0,    0,    0,    0
+  344,20110102,   11,  340,   30,   30,   50,   45,     ,   19,    8,   60,    0,    0,10249,   70,    0,   83,     ,    5,    0,    0,    0,    0,    0
+  344,20110102,   12,  330,   30,   30,   70,   44,  -19,    8,    7,   68,    0,    0,10248,   75,    3,   77,    3,    7,    0,    0,    0,    0,    0
+  344,20110102,   13,  330,   40,   40,   90,   33,     ,    1,    2,   32,    0,    0,10247,   75,    1,   79,     ,    5,    0,    0,    0,    0,    0
+  344,20110102,   14,  320,   40,   30,   70,   47,     ,   12,   10,   52,    0,    0,10246,   75,    6,   78,     ,    5,    0,    0,    0,    0,    0
+  344,20110102,   15,  330,   40,   40,   60,   30,     ,   -2,    7,   29,    0,    0,10249,   75,    0,   79,     ,    5,    0,    0,    0,    0,    0
+  344,20110102,   16,  300,   30,   20,   50,    8,     ,  -11,    0,    1,    0,    0,10250,   70,    1,   87,     ,    5,    0,    0,    0,    0,    0
+  344,20110102,   17,  310,   30,   20,   50,   -1,     ,  -24,    0,    0,    0,    0,10249,   70,    0,   83,     ,    5,    0,    0,    0,    0,    0
+  344,20110102,   18,  270,   20,   30,   40,    4,  -38,  -14,    0,    0,    0,    0,10250,   70,    1,   88,     ,    5,    0,    0,    0,    0,    0
+  344,20110102,   19,  270,   30,   30,   40,   15,     ,    2,    0,    0,    0,    0,10251,   65,    8,   91,     ,    5,    0,    0,    0,    0,    0
+  344,20110102,   20,  260,   30,   30,   80,   13,     ,   -6,    0,    0,    0,   -1,10251,   70,    1,   87,   22,    7,    0,    1,    0,    0,    0
+  344,20110102,   21,  260,   30,   30,   50,   -6,     ,  -19,    0,    0,    0,    0,10251,   70,    1,   90,    2,    7,    0,    0,    0,    0,    0
+  344,20110102,   22,  310,   20,   30,   50,   13,     ,    3,    0,    0,    0,   -1,10252,   65,    8,   93,   25,    7,    0,    1,    0,    0,    1
+  344,20110102,   23,  260,   20,   20,   50,   20,     ,    3,    0,    0,    0,   -1,10251,   70,    8,   88,   22,    7,    0,    1,    0,    0,    0
+  344,20110102,   24,  280,   30,   30,   40,   15,  -34,    2,    0,    0,    0,    0,10250,   65,    7,   91,    1,    7,    0,    0,    0,    0,    0
+  344,20110103,    1,  270,   20,   20,   50,   15,     ,    4,    0,    0,    0,   -1,10249,   65,    7,   92,   22,    7,    0,    1,    0,    0,    0
+  344,20110103,    2,  250,   20,   30,   30,   -4,     ,  -12,    0,    0,    0,    0,10249,   65,    3,   94,     ,    5,    0,    0,    0,    0,    0
+  344,20110103,    3,  260,   20,   20,   40,    4,     ,   -5,    0,    0,    0,    0,10247,   65,    6,   94,    3,    7,    0,    0,    0,    0,    0
+  344,20110103,    4,  990,   10,   10,   30,   -7,     ,  -16,    0,    0,    0,    0,10246,   65,    5,   93,     ,    5,    0,    0,    0,    0,    0
+  344,20110103,    5,  220,   10,   10,   20,  -13,     ,  -20,    0,    0,    0,    0,10242,   65,    3,   94,     ,    5,    0,    0,    0,    0,    0
+  344,20110103,    6,  230,   20,   30,   30,  -13,  -47,  -19,    0,    0,    0,    0,10240,   65,    5,   95,    3,    7,    0,    0,    0,    0,    0
+  344,20110103,    7,  290,   30,   30,   40,   12,     ,    5,    0,    0,    0,   -1,10241,   60,    7,   95,   81,    7,    0,    1,    0,    0,    0
+  344,20110103,    8,  120,   20,   10,   40,    4,     ,   -2,    0,    0,    9,   15,10245,   57,    8,   96,   81,    7,    0,    1,    1,    0,    0
+  344,20110103,    9,  180,   20,   20,   30,    8,     ,    3,    0,    6,    0,   -1,10242,   62,    7,   96,   23,    7,    0,    1,    0,    0,    0
+  344,20110103,   10,  160,   20,   10,   40,   14,     ,    9,    0,   19,    0,    0,10243,   62,    8,   96,     ,    5,    0,    0,    0,    0,    0
+  344,20110103,   11,  170,   20,   20,   30,   24,     ,   18,    0,   35,    0,    0,10240,   64,    8,   96,     ,    5,    0,    0,    0,    0,    0
+  344,20110103,   12,  190,   20,   20,   30,   38,  -47,   22,    7,   65,    0,    0,10234,   70,    8,   89,    2,    7,    0,    0,    0,    0,    0
+  344,20110103,   13,  240,   40,   30,   50,   37,     ,   14,    2,   43,    0,    0,10230,   70,    8,   85,     ,    5,    0,    0,    0,    0,    0
+  344,20110103,   14,  230,   30,   20,   60,   25,     ,   10,    2,   30,    0,    0,10229,   70,    6,   90,     ,    5,    0,    0,    0,    0,    0
+  344,20110103,   15,  260,   20,   20,   30,   27,     ,   12,    0,   10,    0,    0,10227,   70,    8,   90,     ,    5,    0,    0,    0,    0,    0
+  344,20110103,   16,  240,   30,   30,   60,   15,     ,    4,    0,    2,    0,   -1,10224,   65,    8,   92,   22,    7,    0,    1,    0,    0,    0
+  344,20110103,   17,  210,   30,   30,   50,   15,     ,    8,    0,    0,    0,   -1,10221,   65,    8,   95,   22,    7,    0,    1,    0,    0,    0
+  344,20110103,   18,  190,   30,   30,   50,   15,    9,    5,    0,    0,    0,    0,10217,   65,    8,   93,    2,    7,    0,    0,    0,    0,    0
+  344,20110103,   19,  190,   30,   20,   80,    5,     ,   -2,    0,    0,    3,    6,10215,   59,    8,   95,   81,    7,    0,    1,    1,    0,    0
+  344,20110103,   20,  200,   30,   30,   50,   13,     ,    5,    0,    0,    0,   -1,10213,   63,    8,   94,   23,    7,    0,    1,    0,    0,    0
+  344,20110103,   21,  220,   30,   40,   60,   15,     ,    7,    0,    0,    0,    0,10211,   65,    8,   94,    2,    7,    0,    0,    0,    0,    0
+  344,20110103,   22,  260,   20,   20,   50,   11,     ,    4,    0,    0,    4,    3,10210,   65,    8,   95,   51,    7,    0,    1,    0,    0,    0
+  344,20110103,   23,  230,   30,   40,   50,   11,     ,   -7,    0,    0,    0,   -1,10208,   70,    8,   88,   22,    7,    0,    1,    0,    0,    0
+  344,20110103,   24,  220,   20,   20,   40,   12,    3,   -1,    0,    0,    0,    0,10204,   65,    7,   91,    1,    7,    0,    0,    0,    0,    0
+  344,20110104,    1,  190,   30,   30,   40,   13,     ,    3,    0,    0,    0,    0,10197,   60,    8,   93,     ,    5,    0,    0,    0,    0,    0
+  344,20110104,    2,  210,   30,   40,   60,   18,     ,    4,    0,    0,    0,    0,10194,   61,    8,   90,     ,    5,    0,    0,    0,    0,    0
+  344,20110104,    3,  210,   40,   40,   70,   17,     ,   -3,    0,    0,    0,    0,10189,   65,    8,   87,     ,    5,    0,    0,    0,    0,    0
+  344,20110104,    4,  200,   30,   30,   60,   12,     ,   -6,    0,    0,    0,    0,10181,   62,    8,   88,     ,    5,    0,    0,    0,    0,    0
+  344,20110104,    5,  190,   40,   40,   70,   10,     ,   -3,    0,    0,    0,    0,10176,   59,    8,   91,   10,    7,    0,    0,    0,    0,    0
+  344,20110104,    6,  200,   40,   50,   60,   12,    5,   -4,    0,    0,    0,    0,10171,   63,    8,   89,     ,    5,    0,    0,    0,    0,    0
+  344,20110104,    7,  200,   50,   40,   90,   12,     ,   -8,    0,    0,    0,    0,10169,   66,    8,   86,     ,    5,    0,    0,    0,    0,    0
+  344,20110104,    8,  210,   50,   60,   90,   13,     ,  -13,    0,    0,    0,    0,10170,   68,    8,   83,     ,    5,    0,    0,    0,    0,    0
+  344,20110104,    9,  190,   50,   50,   80,    7,     ,  -18,    0,    6,    0,    0,10169,   66,    7,   83,     ,    5,    0,    0,    0,    0,    0
+  344,20110104,   10,  190,   50,   60,   80,    9,     ,  -16,    7,   32,    0,    0,10168,   65,    2,   83,     ,    5,    0,    0,    0,    0,    0
+  344,20110104,   11,  200,   60,   60,  100,   20,     ,  -14,   10,   65,    0,    0,10161,   70,    5,   78,     ,    5,    0,    0,    0,    0,    0
+  344,20110104,   12,  200,   60,   60,  100,   22,    0,  -14,    7,   69,    0,    0,10152,   66,    3,   77,     ,    5,    0,    0,    0,    0,    0
+  344,20110104,   13,  200,   70,   70,  110,   25,     ,  -13,    8,   73,    0,    0,10145,   69,    8,   76,     ,    5,    0,    0,    0,    0,    0
+  344,20110104,   14,  200,   70,   60,  100,   24,     ,  -18,    0,   28,    0,    0,10143,   69,    8,   74,     ,    5,    0,    0,    0,    0,    0
+  344,20110104,   15,  200,   60,   60,  100,   22,     ,  -18,    0,   10,    0,    0,10139,   70,    8,   75,     ,    5,    0,    0,    0,    0,    0
+  344,20110104,   16,  190,   60,   60,   90,   16,     ,  -21,    0,    2,    0,    0,10137,   69,    7,   76,     ,    5,    0,    0,    0,    0,    0
+  344,20110104,   17,  200,   60,   60,  100,   12,     ,  -24,    0,    0,    0,    0,10138,   67,    7,   77,     ,    5,    0,    0,    0,    0,    0
+  344,20110104,   18,  200,   70,   60,  110,   10,    4,  -21,    0,    0,    0,    0,10135,   63,    8,   80,     ,    5,    0,    0,    0,    0,    0
+  344,20110104,   19,  200,   60,   60,  100,    9,     ,  -18,    0,    0,    0,    0,10133,   61,    8,   82,     ,    5,    0,    0,    0,    0,    0
+  344,20110104,   20,  190,   60,   60,  110,    6,     ,  -18,    0,    0,    0,    0,10128,   61,    8,   84,     ,    5,    0,    0,    0,    0,    0
+  344,20110104,   21,  190,   70,   70,  110,    6,     ,  -18,    0,    0,    0,    0,10125,   60,    8,   84,     ,    5,    0,    0,    0,    0,    0
+  344,20110104,   22,  200,   70,   60,  100,    5,     ,  -17,    0,    0,    0,    0,10125,   59,    8,   85,   10,    7,    0,    0,    0,    0,    0
+  344,20110104,   23,  190,   70,   70,  110,    5,     ,  -17,    0,    0,    0,    0,10122,   59,    8,   85,   10,    7,    0,    0,    0,    0,    0
+  344,20110104,   24,  190,   70,   80,  110,    2,    0,  -20,    0,    0,    0,    0,10117,   60,    8,   85,     ,    5,    0,    0,    0,    0,    0
+  344,20110105,    1,  190,   80,   70,  120,    1,     ,  -23,    0,    0,    0,    0,10112,   60,    1,   84,     ,    5,    0,    0,    0,    0,    0
+  344,20110105,    2,  190,   60,   70,  100,    1,     ,  -23,    0,    0,    0,    0,10109,   61,    8,   84,     ,    5,    0,    0,    0,    0,    0
+  344,20110105,    3,  190,   60,   70,  110,    1,     ,  -24,    0,    0,    0,    0,10107,   61,    8,   83,     ,    5,    0,    0,    0,    0,    0
+  344,20110105,    4,  190,   60,   70,  120,    2,     ,  -22,    0,    0,    0,    0,10102,   61,    8,   84,     ,    5,    0,    0,    0,    0,    0
