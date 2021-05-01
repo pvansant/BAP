@@ -1,3 +1,6 @@
+# TODO header
+# TODO better file name?
+
 print('run started')
 
 import numpy as np
@@ -17,6 +20,7 @@ try:
     y = data[:,1] # only relevant stuff; all rows of column 1
 except:
     print('error in retrieving y')
+    exit() # FIXME use a flag
 
 try:
     data = np.genfromtxt('Weather Forecasting/Relevant Data/x_100-2011-data-points.txt', 
@@ -24,6 +28,7 @@ try:
     X = data[:,3:] # only relevant stuff; all rows of column 3 till end
 except:
     print('error in retrieving X')
+    exit()
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=30, random_state=None)
 
@@ -32,7 +37,10 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=30, random_s
 # print("shape of y_train: {}".format(y_train.shape))
 # print("shape of y_test: {}".format(y_test.shape))
 
+# TODO standardization
+
 # checking and handling missing values 
+# FIXME improve handling NaNs
 imp = sk.impute.SimpleImputer(missing_values=np.nan, strategy='median')
 X_train = imp.fit_transform(X_train)
 X_test = imp.fit_transform(X_test)
