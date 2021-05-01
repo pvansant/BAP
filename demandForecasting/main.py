@@ -38,3 +38,6 @@ for i in X[:,0]:
 X = np.append(timeInfo, np.delete(X,0,1), 1)
 
 # print(X[0:100,:])
+
+# TODO add output data
+# TODO make prediction model
