@@ -54,26 +54,22 @@ X_test = imp.fit_transform(X_test)
 
 ###################
 
-# load dataset
-dataframe = read_csv("housing.csv", delim_whitespace=True, header=None)
-dataset = dataframe.values
-# split into input (X) and output (Y) variables
-X = dataset[:,0:13]
-Y = dataset[:,13]
+# from https://machinelearningmastery.com/regression-tutorial-keras-deep-learning-library-python/
 # define base model
 def baseline_model():
-	# create model
-	model = Sequential()
-	model.add(Dense(13, input_dim=13, kernel_initializer='normal', activation='relu'))
-	model.add(Dense(1, kernel_initializer='normal'))
-	# Compile model
-	model.compile(loss='mean_squared_error', optimizer='adam')
-	return model
+    # create model
+    model = Sequential()
+    model.add(Dense(22, input_dim=22, kernel_initializer='normal', activation='relu'))
+    model.add(Dense(1, kernel_initializer='normal'))
+    # Compile model
+    model.compile(loss='mean_squared_error', optimizer='adam')
+    return model
 # evaluate model with standardized dataset
 estimators = []
 estimators.append(('standardize', StandardScaler()))
-estimators.append(('mlp', KerasRegressor(build_fn=baseline_model, epochs=50, batch_size=5, verbose=0)))
+estimators.append(('mlp', KerasRegressor(build_fn=baseline_model, epochs=5, batch_size=5, verbose=2)))
+# verbose =0 will show nothing; =1 will show animated progress; =2 will mention the number of epochs
 pipeline = Pipeline(estimators)
 kfold = KFold(n_splits=10)
-results = cross_val_score(pipeline, X, Y, cv=kfold)
+results = cross_val_score(pipeline, X_train, y_train, cv=kfold)
 print("Standardized: %.2f (%.2f) MSE" % (results.mean(), results.std()))
