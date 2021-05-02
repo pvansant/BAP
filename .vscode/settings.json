@@ -1,5 +1,8 @@
 {
     "python.analysis.diagnosticSeverityOverrides": {
-        "reportMissingImports": "none"
-    }
+        "reportMissingImports": "none",
+        "reportMissingModuleSource": "none"
+    },
+    
+    "python.pythonPath": "C:\\Users\\piete\\anaconda3\\envs\\tf"
 }
