@@ -105,7 +105,8 @@ def plot_2class(x_in,y_in):
     #finish the plot
     plt.legend()
     plt.axis('scaled')
-    plt.xlabel('PC1'); plt.ylabel('PC2');
+    plt.xlabel('PC1') 
+    plt.ylabel('PC2')
 
 plot_x = X_train[0:1000,0:2].T
 plot_y = (y_train.T)[np.newaxis,0:1000]
