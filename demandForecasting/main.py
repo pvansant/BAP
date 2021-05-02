@@ -1,7 +1,6 @@
 '''
 Authors: Aart Rozendaal and Pieter Van Santvliet
-Description: In this script, weather data is used to predict the average capacity factor 
-of wind turbines in Rotterdam.
+Description: # TODO description
 '''
 
 import os; os.system('cls') # clears the command window
@@ -40,4 +39,6 @@ X = np.append(timeInfo, np.delete(X,0,1), 1)
 # print(X[0:100,:])
 
 # TODO add output data
+# NOTE these datasets are of houses of which some have their own generation
+
 # TODO make prediction model
