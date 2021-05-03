@@ -13,6 +13,7 @@ import sklearn.impute
 import numpy as np
 import sklearn as sk
 import functions as f
+
 from pandas import read_csv
 from keras.models import Sequential
 from keras.layers import Dense
@@ -44,7 +45,7 @@ except:
     print('Error while retrieving X')
     exit()
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.3, random_state=None)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.3, random_state=42)
 # f.printSets(X_train, X_test, y_train, y_test)
 
 # checking and handling missing values 
@@ -64,12 +65,36 @@ def baseline_model():
     # Compile model
     model.compile(loss='mean_squared_error', optimizer='adam')
     return model
+
+# baseline_model().summary()
+
+# make a single model and evaluate it with the test set
+'''
+# estimators = []
+# estimators.append(('standardize', StandardScaler()))
+# estimators.append(('mlp', KerasRegressor(build_fn=baseline_model, epochs=5, batch_size=5, verbose=2)))
+# # verbose =0 will show nothing; =1 will show animated progress; =2 will mention the number of epochs
+# pipeline = Pipeline(estimators)
+
+# # regressor = KerasRegressor(build_fn=baseline_model, epochs=5, batch_size=5, verbose=2)
+# pipeline.fit(X_train,y_train)
+
+# y_pred = pipeline.predict(X_test)
+# mse_krr = mean_squared_error(y_test, y_pred)
+# print(mse_krr)
+'''
+
+# make multiple models using cross_val_score and evaluate it using validation sets from the training set
+'''
 # evaluate model with standardized dataset
 estimators = []
 estimators.append(('standardize', StandardScaler()))
 estimators.append(('mlp', KerasRegressor(build_fn=baseline_model, epochs=5, batch_size=5, verbose=2)))
 # verbose =0 will show nothing; =1 will show animated progress; =2 will mention the number of epochs
+
 pipeline = Pipeline(estimators)
-kfold = KFold(n_splits=10)
+kfold = KFold(n_splits=3)
 results = cross_val_score(pipeline, X_train, y_train, cv=kfold)
-print("Standardized: %.2f (%.2f) MSE" % (results.mean(), results.std()))
+
+print("Standardized: %.7f (%.7f) MSE" % (results.mean(), results.std()))
+'''
