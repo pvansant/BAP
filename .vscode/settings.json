@@ -4,5 +4,5 @@
         "reportMissingModuleSource": "none"
     },
     
-    "python.pythonPath": "C:\\Users\\piete\\anaconda3\\envs\\tf"
+    "python.pythonPath": "C:\\Users\\piete\\anaconda3\\envs\\tf\\python.exe"
 }
