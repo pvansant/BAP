@@ -48,7 +48,7 @@ imp = sk.impute.SimpleImputer(missing_values=np.nan, strategy='median')
 X_train = imp.fit_transform(X_train)
 X_test = imp.fit_transform(X_test)
 
-# TODO feature selection
+# since this is not DL there should be feature selection
 
 # create model
 model = LinearRegression()
