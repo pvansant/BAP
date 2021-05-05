@@ -12,7 +12,9 @@ import datetime as dt; start_time = dt.datetime.now()
 # display a "Run started" message
 print('Run started at ', start_time.strftime("%X"), '\n')
 
+import functions as f
 import sklearn as sk
+import matplotlib.pyplot as plt
 import numpy as np
 import numpy.ma as ma
 import sklearn.impute
@@ -27,7 +29,7 @@ from sklearn.preprocessing import StandardScaler
 
 # extracting input data from txt file
 try:
-    data = np.genfromtxt('weatherForecasting/relevantData/x_2011-data-points.txt', 
+    data = np.genfromtxt('demandForecasting/relevantData/x_2013-data-points.txt', 
     dtype=float, delimiter=',', skip_header=33)
     X = data[:,[1,2,7,10,21,23]] # only relevant stuff:
     # select YYYYMMDD (col 1; datum), HH (col 2; hour), T (col 7; temperature), 
@@ -81,22 +83,26 @@ X_test = imp.fit_transform(X_test)
 def baseline_model():
     # create model
     model = Sequential()
-    model.add(Dense(22, input_dim=22, kernel_initializer='normal', activation='relu'))
+    model.add(Dense(256, input_dim=7, kernel_initializer='normal', activation='relu'))
+    model.add(Dense(128, kernel_initializer='normal', activation='relu'))
+    model.add(Dense(64, kernel_initializer='normal', activation='relu'))
+    model.add(Dense(32, kernel_initializer='normal', activation='relu'))
+    model.add(Dense(16, kernel_initializer='normal', activation='relu'))
     model.add(Dense(1, kernel_initializer='normal'))
     # Compile model
     model.compile(loss='mean_squared_error', optimizer='adam')
     return model
 
-# baseline_model().summary() # enable to print a summary of the NN model
+baseline_model().summary() # enable to print a summary of the NN model
 
 # make a single model and evaluate it with the test set
 '''
 estimators = []
 estimators.append(('standardize', StandardScaler()))
-estimators.append(('mlp', KerasRegressor(build_fn=baseline_model, epochs=5, batch_size=5, verbose=2)))
+estimators.append(('mlp', KerasRegressor(build_fn=baseline_model, epochs=100, batch_size=100, verbose=2)))
 # verbose =0 will show nothing; =1 will show animated progress; =2 will mention the number of epochs
 pipeline = Pipeline(estimators)
-pipeline.fit(X_train,y_train)
+history = pipeline.fit(X_train,y_train)
 
 y_pred = pipeline.predict(X_test)
 mse_krr = mean_squared_error(y_test, y_pred)
