@@ -50,7 +50,7 @@ for i in X[:,0]:
 # the date-column is replaced by a weeknumber and daynumber column
 X = np.append(timeInfo, np.delete(X,0,1), 1)
 
-# print(X[0:100,:]) # FIXME gekke temperaturen
+# print(X[0:100,:])
 
 # extracting output data from csv file
 try:
