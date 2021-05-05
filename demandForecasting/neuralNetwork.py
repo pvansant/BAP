@@ -93,32 +93,42 @@ def baseline_model():
     model.compile(loss='mean_squared_error', optimizer='adam')
     return model
 
-baseline_model().summary() # enable to print a summary of the NN model
+# baseline_model().summary() # enable to print a summary of the NN model
 
-# make a single model and evaluate it with the test set
-'''
+model = KerasRegressor(build_fn=baseline_model, epochs=10, batch_size=100, verbose=2)
+# verbose =0 will show nothing; =1 will show animated progress; =2 will mention the number of epochs
+
 estimators = []
 estimators.append(('standardize', StandardScaler()))
-estimators.append(('mlp', KerasRegressor(build_fn=baseline_model, epochs=100, batch_size=100, verbose=2)))
-# verbose =0 will show nothing; =1 will show animated progress; =2 will mention the number of epochs
+estimators.append(('mlp', model))
 pipeline = Pipeline(estimators)
-history = pipeline.fit(X_train,y_train)
+
+### make a single model and evaluate it with the test set
+'''
+pipeline.fit(X_train,y_train)
 
 y_pred = pipeline.predict(X_test)
 mse_krr = mean_squared_error(y_test, y_pred)
 
-print(mse_krr)
+print('\nThe MSE is', mse_krr)
+print('The RMSE is', mse_krr**0.5)
+print('The relative error is', mse_krr**0.5/30800)
 '''
 
-# make multiple models using cross_val_score and evaluate it using validation sets from the training set
+### make a single model (without the pipeline) and show the learning curve
 '''
-# evaluate model with standardized dataset
-estimators = []
-estimators.append(('standardize', StandardScaler()))
-estimators.append(('mlp', KerasRegressor(build_fn=baseline_model, epochs=5, batch_size=5, verbose=2)))
-# verbose =0 will show nothing; =1 will show animated progress; =2 will mention the number of epochs
+history = model.fit(X_train,y_train)
+# print(history.history.keys())
+# summarize history for loss
+plt.plot(history.history['loss'])
+plt.title('model loss')
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.show()
+'''
 
-pipeline = Pipeline(estimators)
+### make multiple models using cross_val_score and evaluate it using validation sets from the training set
+'''
 kfold = KFold(n_splits=3)
 results = cross_val_score(pipeline, X_train, y_train, cv=kfold)
 
