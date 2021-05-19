@@ -70,6 +70,8 @@ y = y.reshape(-1,4,y.shape[-1]).sum(1)
 y = np.where(np.isnan(y), ma.array(y, mask=np.isnan(y)).mean(axis=1)[:, np.newaxis], y)
 y = y.sum(1)
 
+####################################### COPY OF WEATHER NN BELOW
+
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.3, random_state=42)
 # f.printSets(X_train, X_test, y_train, y_test) # enable to print set shapes
 
