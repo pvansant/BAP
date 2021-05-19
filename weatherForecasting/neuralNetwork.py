@@ -11,16 +11,22 @@ import datetime as dt; start_time = dt.datetime.now()
 print('Run started at ', start_time.strftime("%X"), '\n')
 
 import functions as f
+import matplotlib.pyplot as plt
 import numpy as np
 import sklearn as sk
 import sklearn.impute
 from keras.layers import Dense
 from keras.models import Sequential
 from keras.wrappers.scikit_learn import KerasRegressor
+from tensorflow import keras
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import KFold, cross_val_score, train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
+
+# suppress depreciation warnings
+import tensorflow.python.util.deprecation as deprecation
+deprecation._PRINT_DEPRECATION_WARNINGS = False
 
 
 # extracting data from csv file
@@ -45,6 +51,8 @@ except:
 # print(X[-5:,:2])
 # print(y[-2:])
 
+####################################### OG NN
+
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.3, random_state=42)
 # f.printSets(X_train, X_test, y_train, y_test) # enable to print set shapes
 
@@ -66,7 +74,7 @@ def baseline_model():
     model.compile(loss='mean_squared_error', optimizer='adam')
     return model
 
-epochs = 100
+epochs = 5
 batch_size = 200
 verbose = 2         # 0 to show nothing; 1 or 2 to show the progress
 n_splits = 3
@@ -78,6 +86,11 @@ estimators = []
 estimators.append(('standardize', StandardScaler()))
 estimators.append(('mlp', model))
 pipeline = Pipeline(estimators)
+
+### load an existing model # TODO still must be tested
+'''
+model = keras.models.load_model('weatherForecasting/anotherTest')
+'''
 
 ### make a single model and evaluate it with the test set
 '''
@@ -122,6 +135,11 @@ print('\tbatch_size:', batch_size)
 print('\tn_splits:', n_splits)
 print('\tX_train shape:', X_train.shape)
 print('\nRelative Root MSE becomes: {:.1%}'.format(RRMSE))
+'''
+
+### save the model
+'''
+model.model.save('weatherForecasting/savedModel')
 '''
 
 # print the runtime
