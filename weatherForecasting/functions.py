@@ -58,8 +58,7 @@ def trainWithoutCurve(X_train, y_train, pipeline):
     pipeline.fit(X_train,y_train)
     y_pred = pipeline.predict(X_train)
     MSE = mean_squared_error(y_train, y_pred)
-    rootMSE = MSE**0.5
-    return MSE,rootMSE
+    return MSE
 
 
 ### make a single model (without the pipeline) and show the learning curve
@@ -88,7 +87,7 @@ def performCrossValidation(X_train, y_train, n_splits, pipeline):
 
 
 ### print the results
-def printTrainingResults(X_train, epochs, batch_size, n_splits, baseline_model, MSE, rootMSE):
+def printTrainingResults(X_train, epochs, batch_size, n_splits, baseline_model, MSE):
     print('\n\n')
     baseline_model().summary() # enable to print a summary of the NN model
     
@@ -99,4 +98,4 @@ def printTrainingResults(X_train, epochs, batch_size, n_splits, baseline_model, 
     print('\tX_train shape:\t', X_train.shape)
     
     print('\nMSE becomes: {:.4f}'.format(abs(MSE)))
-    print('Root MSE becomes: {:.4f}'.format(rootMSE))
+    print('Root MSE becomes: {:.4f}'.format(abs(MSE)**0.5))

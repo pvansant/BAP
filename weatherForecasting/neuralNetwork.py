@@ -73,7 +73,7 @@ pipeline = Pipeline(estimators)
 
 
 ### make a single model and evaluate it with the test set
-MSE, rootMSE = fs.trainWithoutCurve(X_train, y_train, pipeline)
+MSE = fs.trainWithoutCurve(X_train, y_train, pipeline)
 
 y_pred = pipeline.predict(X_test)
 testMSE = mean_squared_error(y_test, y_pred)
@@ -89,7 +89,7 @@ MSE, STD = fs.performCrossValidation(X_train, y_train, n_splits, pipeline)
 
 
 ### print the results
-fs.printTrainingResults(X_train, epochs, batch_size, n_splits, baseline_model, MSE, rootMSE)
+fs.printTrainingResults(X_train, epochs, batch_size, n_splits, baseline_model, MSE)
 
 
 ### save the model
