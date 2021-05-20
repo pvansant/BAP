@@ -10,7 +10,7 @@ import datetime as dt; start_time = dt.datetime.now()
 # display a "Run started" message
 print('Run started at ', start_time.strftime("%X"), '\n')
 
-import functions as f
+import functions as fs
 import matplotlib.pyplot as plt
 import numpy as np
 import sklearn as sk
@@ -30,21 +30,7 @@ deprecation._PRINT_DEPRECATION_WARNINGS = False
 
 
 # extracting data from csv file
-try:
-    data = np.genfromtxt('weatherForecasting/relevantData/Training-1_y.csv', 
-    dtype=float, delimiter=',', skip_header=1, skip_footer=1)
-    y = data[:,1] # only relevant stuff; all rows of column 1
-except:
-    print('Error while retrieving y'); exit()
-
-# extracting data from txt file
-try:
-    data = np.genfromtxt('weatherForecasting/relevantData/Training-1_X.csv', 
-    dtype=float, delimiter=',', skip_header=33)
-    X = data[:,3:] # only relevant stuff; all rows of column 3 till end
-except:
-    print('Error while retrieving X')
-    exit()
+X, y = fs.retrieveGenerationData()
 
 
 
@@ -100,10 +86,10 @@ def baseline_model():
     model.compile(loss='mean_squared_error', optimizer='adam')
     return model
 
-epochs = 10
+epochs = 2
 batch_size = 100
 verbose = 2         # 0 to show nothing; 1 or 2 to show the progress
-n_splits = 10
+n_splits = 2
 
 model = KerasRegressor(build_fn=baseline_model, epochs=epochs, batch_size=batch_size, verbose=verbose)
 
@@ -114,59 +100,23 @@ estimators.append(('mlp', model))
 pipeline = Pipeline(estimators)
 
 ### load an existing model 
-'''
-model = keras.models.load_model('weatherForecasting/anotherTest')
-'''
+# model = keras.models.load_model('weatherForecasting/anotherTest')
+
 
 ### make a single model and evaluate it with the test set
-
-pipeline.fit(X_train,y_train)
+MSE = fs.trainWithoutCurve(X_train, y_train, pipeline)
 
 y_pred = pipeline.predict(X_test)
-mse_krr = mean_squared_error(y_test, y_pred)
-
-print('\nThe MSE is', mse_krr)
-print('The RMSE is', mse_krr**0.5)
-print('The relative error is', mse_krr**0.5/30800)
-
-
-### make a single model (without the pipeline) and show the learning curve
-'''
-history = model.fit(X_train,y_train)
-# print(history.history.keys())
-# summarize history for loss
-plt.plot(history.history['loss'])
-plt.title('model loss')
-plt.ylabel('loss')
-plt.xlabel('epoch')
-plt.show()
-'''
-
-### make multiple models using cross_val_score and evaluate it using validation sets from the training set
-'''
-kfold = KFold(n_splits=n_splits)
-results = cross_val_score(pipeline, X_train, y_train, cv=kfold)
-
-# print("\nStandardized: %.7f (%.7f) MSE" % (results.mean(), results.std()))
-RRMSE = abs(results.mean().item())**0.5
-'''
+testMSE = mean_squared_error(y_test, y_pred)
+testRootMSE = MSE**0.5
 
 ### print the results
-'''
-print('\n\n')
-baseline_model().summary() # enable to print a summary of the NN model
-print('\nParameters:')
-print('\tepochs:', epochs)
-print('\tbatch_size:', batch_size)
-print('\tn_splits:', n_splits)
-print('\tX_train shape:', X_train.shape)
-print('\nRelative Root MSE becomes: {:.1%}'.format(RRMSE))
-'''
+fs.printTrainingResults(X_train, epochs, batch_size, n_splits, baseline_model, MSE)
+
 
 ### save the model
-'''
-model.model.save('weatherForecasting/savedModel')
-'''
+# model.model.save('weatherForecasting/savedModel')
+
 
 # print the runtime
 print('\nRuntime was', (dt.datetime.now() - start_time).total_seconds(), 'seconds')
