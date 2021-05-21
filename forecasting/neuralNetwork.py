@@ -28,13 +28,13 @@ from sklearn.preprocessing import StandardScaler
 import tensorflow.python.util.deprecation as deprecation
 deprecation._PRINT_DEPRECATION_WARNINGS = False
 
-X, y = fs.retrieveGenerationData()
+X, y = fs.retrieveWindData()
+X, y = fs.retrieveDemandData()
 
-####################################### OG NN
 
 # splitting data in test and training sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.3, random_state=42)
-# fs.printSets(X_train, X_test, y_train, y_test) # enable to print set shapes
+fs.printSets(X_train, X_test, y_train, y_test) # enable to print set shapes
 
 # checking and handling missing values 
 imp = sk.impute.SimpleImputer(missing_values=np.nan, strategy='median')
@@ -48,8 +48,8 @@ verbose = 2         # 0 to show nothing; 1 or 2 to show the progress
 n_splits = 2
 
 # from https://machinelearningmastery.com/regression-tutorial-keras-deep-learning-library-python/
-# define base model
-def baseline_model():
+# define generation base model
+def windBaselineModel():
     # create model
     model = Sequential()
     model.add(Dense(32, input_dim=22, kernel_initializer='normal', activation='relu'))
@@ -60,7 +60,23 @@ def baseline_model():
     model.compile(loss='mean_squared_error', optimizer='adam')
     return model
 
-model = KerasRegressor(build_fn=baseline_model, epochs=epochs, batch_size=batch_size, verbose=verbose)
+# define demand base model
+def demandBaselineModel():
+    # create model
+    model = Sequential()
+    model.add(Dense(256, input_dim=7, kernel_initializer='normal', activation='relu'))
+    model.add(Dense(128, kernel_initializer='normal', activation='relu'))
+    model.add(Dense(64, kernel_initializer='normal', activation='relu'))
+    model.add(Dense(32, kernel_initializer='normal', activation='relu'))
+    model.add(Dense(16, kernel_initializer='normal', activation='relu'))
+    model.add(Dense(1, kernel_initializer='normal'))
+    # Compile model
+    model.compile(loss='mean_squared_error', optimizer='adam')
+    return model
+
+# model = KerasRegressor(build_fn=generationBaselineModel, epochs=epochs, batch_size=batch_size, verbose=verbose)
+model = KerasRegressor(build_fn=demandBaselineModel, epochs=epochs, batch_size=batch_size, verbose=verbose)
+
 
 # evaluate model with standardized dataset
 estimators = []
@@ -89,7 +105,7 @@ MSE, STD = fs.performCrossValidation(X_train, y_train, n_splits, pipeline)
 
 
 ### print the results
-fs.printTrainingResults(X_train, epochs, batch_size, n_splits, baseline_model, MSE)
+fs.printTrainingResults(X_train, epochs, batch_size, n_splits, windBaselineModel, MSE)
 
 
 ### save the model
