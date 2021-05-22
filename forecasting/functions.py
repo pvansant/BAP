@@ -75,8 +75,9 @@ def retrieveDemandData():
         day = int(str(i)[6:8])
         # make a date from the date info
         time = dt.datetime(year, month, day)
-        # timeInfo will contain the weeknumber (%V) and the daynumber (%u)
-        timeInfo = np.append(timeInfo, np.array([[time.strftime("%V"),time.strftime("%u")]]), axis=0)
+        # timeInfo will contain the season and the daynumber (%u)
+        season = time.month%12//3+1 # month2season: from https://stackoverflow.com/a/44124490
+        timeInfo = np.append(timeInfo, np.array([[season,time.weekday()]]), axis=0)
 
     # the date-column is replaced by a weeknumber and daynumber column
     X = np.append(timeInfo, np.delete(X,0,1), 1)
