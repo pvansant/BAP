@@ -73,13 +73,16 @@ def retrieveDemandData():
         year = int(str(i)[0:4])
         month = int(str(i)[4:6])
         day = int(str(i)[6:8])
+
         # make a date from the date info
         time = dt.datetime(year, month, day)
+
         # timeInfo will contain the season and the daynumber (%u)
         season = time.month%12//3+1 # month2season: from https://stackoverflow.com/a/44124490
+
         timeInfo = np.append(timeInfo, np.array([[season,time.weekday()]]), axis=0)
 
-    # the date-column is replaced by a weeknumber and daynumber column
+    # the date-column is replaced by a season-number and daynumber column
     X = np.append(timeInfo, np.delete(X,0,1), 1)
 
     # extracting output data from csv file
@@ -92,11 +95,20 @@ def retrieveDemandData():
     except:
         print('Error while retrieving output data'); exit()
 
-    y = y.reshape(-1,4,y.shape[-1]).sum(1)
+    # conversion of /15min to /1hr data
+    y = y.reshape(-1,4,y.shape[-1]).sum(1) # summing every 4 columns
 
-    # from https://stackoverflow.com/q/18689235
+    # dealing with nans: from https://stackoverflow.com/q/18689235
     y = np.where(np.isnan(y), ma.array(y, mask=np.isnan(y)).mean(axis=1)[:, np.newaxis], y)
-    y = y.sum(1)
+    y = y.sum(1) # summing all 'households' 
+
+    # scaling the output data
+    y_days = y.reshape(-1,24).sum(1) # create /day data
+    mean_of_one_day_liander = np.mean(y_days) # calc mean of one day
+    mean_of_one_day_tunect = 57241 # mean of 1 day at tunect (from DCG)
+    scalingFactor = mean_of_one_day_tunect/mean_of_one_day_liander
+    y = scalingFactor*y # scaling the data
+
     return X, y
 
 
