@@ -38,13 +38,14 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.3, random_s
 
 # checking and handling missing values 
 imp = sk.impute.SimpleImputer(missing_values=np.nan, strategy='median')
+X = imp.fit_transform(X)
 X_train = imp.fit_transform(X_train)
 X_test = imp.fit_transform(X_test)
 
 # defining certain variables
-epochs = 200
+epochs = 10
 batch_size = 100
-verbose = 0         # 0 to show nothing; 1 or 2 to show the progress
+verbose = 2         # 0 to show nothing; 1 or 2 to show the progress
 n_splits = 2
 
 # from https://machinelearningmastery.com/regression-tutorial-keras-deep-learning-library-python/
@@ -74,7 +75,7 @@ def demandBaselineModel():
     model.compile(loss='mean_squared_error', optimizer='adam')
     return model
 
-# model = KerasRegressor(build_fn=generationBaselineModel, epochs=epochs, batch_size=batch_size, verbose=verbose)
+# model = KerasRegressor(build_fn=windBaselineModel, epochs=epochs, batch_size=batch_size, verbose=verbose)
 model = KerasRegressor(build_fn=demandBaselineModel, epochs=epochs, batch_size=batch_size, verbose=verbose)
 
 
@@ -113,6 +114,13 @@ pipeline = Pipeline(estimators)
 
 ### save the model
 # model.model.save('weatherForecasting/savedModel')
+
+
+### save the prediction
+# MSE = fs.trainWithoutCurve(X_train, y_train, pipeline)
+# y_pred = pipeline.predict(X)
+# np.save('predictedDemand_V1', y_pred)
+
 
 # print the runtime
 print('\nRuntime was', (dt.datetime.now() - start_time).total_seconds(), 'seconds')
