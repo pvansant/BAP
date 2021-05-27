@@ -36,7 +36,7 @@ def printSets(X_train, X_test, y_train, y_test):
 
 
 def retrieveWindData():
-    # extracting data from csv file
+    # extracting wind data from csv file
     try:
         data = np.genfromtxt('forecasting/generationData/Training-1_y.csv', 
         dtype=float, delimiter=',', skip_header=1, skip_footer=1)
@@ -44,7 +44,7 @@ def retrieveWindData():
     except:
         print('Error while retrieving y'); exit()
 
-    # extracting data from txt file
+    # extracting weather data from txt file
     try:
         data = np.genfromtxt('forecasting/generationData/Training-1_X.csv', 
         dtype=float, delimiter=',', skip_header=33)
@@ -53,6 +53,9 @@ def retrieveWindData():
         print('Error while retrieving X'); exit()
     
     return X, y
+
+
+# retrieveSolarData
 
 
 def retrieveDemandData():
@@ -74,12 +77,11 @@ def retrieveDemandData():
         month = int(str(i)[4:6])
         day = int(str(i)[6:8])
 
-        # make a date from the date info
+        # make a date and season from the date info
         time = dt.datetime(year, month, day)
-
-        # timeInfo will contain the season and the daynumber (%u)
         season = time.month%12//3+1 # month2season: from https://stackoverflow.com/a/44124490
 
+        # timeInfo will contain the season and the daynumber (%u)
         timeInfo = np.append(timeInfo, np.array([[season,time.weekday()]]), axis=0)
 
     # the date-column is replaced by a season-number and daynumber column

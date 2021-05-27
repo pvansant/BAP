@@ -8,7 +8,7 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' # suppress tf warnings
 import datetime as dt; start_time = dt.datetime.now()
 # display a "Run started" message
-print('Run started at ', start_time.strftime("%X"), '\n')
+print('\nRun started at ', start_time.strftime("%X"), '\n')
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -34,7 +34,7 @@ X, y = fs.retrieveDemandData()
 
 # splitting data in test and training sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.3, random_state=42)
-fs.printSets(X_train, X_test, y_train, y_test) # enable to print set shapes
+# fs.printSets(X_train, X_test, y_train, y_test) # enable to print set shapes
 
 # checking and handling missing values 
 imp = sk.impute.SimpleImputer(missing_values=np.nan, strategy='median')
