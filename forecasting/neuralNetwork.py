@@ -28,7 +28,7 @@ from sklearn.preprocessing import StandardScaler
 import tensorflow.python.util.deprecation as deprecation
 deprecation._PRINT_DEPRECATION_WARNINGS = False
 
-X, y = fs.retrieveWindData()
+# X, y = fs.retrieveWindData()
 X, y = fs.retrieveDemandData()
 
 
@@ -42,9 +42,9 @@ X_train = imp.fit_transform(X_train)
 X_test = imp.fit_transform(X_test)
 
 # defining certain variables
-epochs = 2
+epochs = 200
 batch_size = 100
-verbose = 2         # 0 to show nothing; 1 or 2 to show the progress
+verbose = 0         # 0 to show nothing; 1 or 2 to show the progress
 n_splits = 2
 
 # from https://machinelearningmastery.com/regression-tutorial-keras-deep-learning-library-python/
@@ -89,23 +89,26 @@ pipeline = Pipeline(estimators)
 
 
 ### make a single model and evaluate it with the test set
-MSE = fs.trainWithoutCurve(X_train, y_train, pipeline)
+# MSE = fs.trainWithoutCurve(X_train, y_train, pipeline)
 
-y_pred = pipeline.predict(X_test)
-testMSE = mean_squared_error(y_test, y_pred)
-testRootMSE = MSE**0.5
-
-
-### make a single model (without the pipeline) and show the learning curve
-fs.trainWithCurve(X_train, y_train, model)
+# y_pred = pipeline.predict(X_test)
+# testMSE = mean_squared_error(y_test, y_pred)
+# testRootMSE = MSE**0.5
+# print('test rmse',testRootMSE)
+# print('test relative rmse',testRootMSE/30800)
 
 
 ### make multiple models using cross_val_score and evaluate it using validation sets from the training set
-MSE, STD = fs.performCrossValidation(X_train, y_train, n_splits, pipeline)
+# MSE, STD = fs.performCrossValidation(X_train, y_train, n_splits, pipeline)
 
 
 ### print the results
-fs.printTrainingResults(X_train, epochs, batch_size, n_splits, windBaselineModel, MSE)
+# fs.printTrainingResults(X_train, epochs, batch_size, n_splits, windBaselineModel, MSE)
+# print('for demand; relative root mse:',MSE**0.5/30800)
+
+
+### make a single model (without the pipeline) and show the learning curve
+# fs.trainWithCurve(X_train, y_train, model)
 
 
 ### save the model
