@@ -40,7 +40,7 @@ X, y = fs.retrieveGenerationData()
 imp = sk.impute.SimpleImputer(missing_values=np.nan, strategy='median')
 X = imp.fit_transform(X)
 
-model = keras.models.load_model('weatherForecasting/savedModel')
+model = keras.models.load_model('forecasting\savedCFModel')
 y_pred = model.predict(X)
 
 currentUsage = 0.33
