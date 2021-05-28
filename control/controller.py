@@ -53,10 +53,13 @@ dCost = {time[i]: dCost_ini[i] for i in range(len(time))}
 
 dMax = 1
 
-SoCperControlLevel = 1.5
+controlSoC_ini = []
+for i in range(169):
+    controlSoC_ini.append(0)
 
+controlSoC = {time[i]: controlSoC_ini[i] for i in range(len(time))}
 # optimizer setup
-#mpc = modelPredictiveControl(time,SoC,SoCDiff,setPoint,weight,dCost,dMax,SoCperControlLevel)
+#mpc = modelPredictiveControl(time,SoC,SoCDiff,setPoint,weight,dCost,dMax,controlSoC)
 
 # run 
 #solver = SolverFactory('ipopt') 
