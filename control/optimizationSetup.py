@@ -25,7 +25,7 @@ setPoint                - Set of length 169 with the Setpoint for every hour
 weight                  - Set of length 169 with the weight of the MSE for every hour
 dCost                   - Set of length 169 with the weigth penalty for changing the control
 dMax                    - integer respresenting the maximum change in the control signal per hour
-SoCperControlLevel      - expected change in SoC per control level
+controlSoC              - Set of length 169 with the control signals
 
 output:
 Model
@@ -72,7 +72,7 @@ def modelPredictiveControl(time,SoC,SoCDiff,setPoint,weight,dCost,dMax,controlSo
 
     
     def constrSoC(mpc,i):
-        SoCtemp = mpc.SoC[i]
+        SoCtemp = mpc.SoC[0]
         if i != 0:
             SoCtemp = mpc.SoC[i-1] + mpc.SoCDiff[i-1] + mpc.controlSoC[i-1] 
         return SoCtemp == mpc.SoC[i]
