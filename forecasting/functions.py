@@ -35,6 +35,17 @@ def printSets(X_train, X_test, y_train, y_test):
     print("shape of y_test: {}".format(y_test.shape))
 
 
+def retrieveWeatherData():
+    # extracting input data from txt file
+    try:
+        data = np.genfromtxt('forecasting/demandData/x_2013-data-points.txt', 
+        dtype=float, delimiter=',', skip_header=33)
+    except:
+        print('Error while retrieving weather data'); exit()
+        
+    return data
+
+
 def retrieveWindData():
     # extracting wind data from csv file
     try:
