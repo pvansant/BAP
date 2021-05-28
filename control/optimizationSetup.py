@@ -32,7 +32,7 @@ Model
 '''
 
 
-def modelPredictiveControl(time,SoC,SoCDiff,setPoint,weight,dCost,dMax,SoCperControlLevel):
+def modelPredictiveControl(time,SoC,SoCDiff,setPoint,weight,dCost,dMax,controlSoC):
 
     #initializing the mpc model using pyomo
     mpc = ConcreteModel()
@@ -46,9 +46,9 @@ def modelPredictiveControl(time,SoC,SoCDiff,setPoint,weight,dCost,dMax,SoCperCon
     mpc.setPoint = Param(mpc.time, initialize=setPoint, mutable=True)
     mpc.weight = Param(mpc.time, initialize=weight, mutable=True)
     mpc.dCost = Param(mpc.time, initialize=dCost, mutable=True )
-
+    mpc.controlSoC = Param(mpc.time, initialize=controlSoC, mutable=True )
     # Define Variables
-    mpc.controlLevel = Var(mpc.time, within = Integers, bounds = (-5,5))
+    mpc.controlLevel = Var(mpc.time, within = Integers, bounds = (-3,4))
     
     # Define Objective functions
     def objrule(mpc):
@@ -57,6 +57,11 @@ def modelPredictiveControl(time,SoC,SoCDiff,setPoint,weight,dCost,dMax,SoCperCon
     mpc.obj = Objective(expr= objrule, sense = minimize )
 
     # Define Constraints
+    
+    def constrControl(mpc, i):
+        constr = 1.1785*mpc.controlLevel[i]**6 - 4.0969*mpc.controlLevel[i]**5 - 14.288*mpc.controlLevel[i]**4 + 46.772*mpc.controlLevel[i]**3 + 35.035*mpc.controlLevel[i]**2 + 24.056*mpc.controlLevel[i]
+        return constr == mpc.controlSoC[i]/772 
+    mpc.constrControl = Constraint( mpc.time, rule= constrControl )
     
     def constrDMax(mpc, i):
         constr = 0 
@@ -69,7 +74,7 @@ def modelPredictiveControl(time,SoC,SoCDiff,setPoint,weight,dCost,dMax,SoCperCon
     def constrSoC(mpc,i):
         SoCtemp = mpc.SoC[i]
         if i != 0:
-            SoCtemp = mpc.SoC[i-1] + mpc.SoCDiff[i-1] + SoCperControlLevel*mpc.controlLevel[i-1]
+            SoCtemp = mpc.SoC[i-1] + mpc.SoCDiff[i-1] + mpc.controlSoC[i-1] 
         return SoCtemp == mpc.SoC[i]
     mpc.constrSoC = Constraint( mpc.time, rule= constrSoC)
 
