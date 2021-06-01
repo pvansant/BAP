@@ -26,7 +26,7 @@ Model
 '''
 
 
-def modelPredictiveControl(time,SoCIni,SoCDiff,setPoint,weight,dCost,dMax,controlLevelIni):
+def modelPredictiveControl(time,SoCIni,SoCDiff,setPoint,weight,dCost,cCost,dMax,controlLevelIni):
 
     #initializing the mpc model using pyomo
     mpc = ConcreteModel()
@@ -39,6 +39,7 @@ def modelPredictiveControl(time,SoCIni,SoCDiff,setPoint,weight,dCost,dMax,contro
     mpc.setPoint = Param(mpc.time, initialize=setPoint, mutable=True)
     mpc.weight = Param(mpc.time, initialize=weight, mutable=True)
     mpc.dCost = Param(mpc.time, initialize=dCost, mutable=True )
+    mpc.cCost = Param(mpc.time, initialize=cCost, mutable=True )
     mpc.SoCIni = Param(initialize=SoCIni, mutable = True)
     mpc.controlLevelIni = Param(initialize=controlLevelIni, mutable = True)
     mpc.dMax = Param(initialize=dMax, mutable = True)
@@ -54,7 +55,7 @@ def modelPredictiveControl(time,SoCIni,SoCDiff,setPoint,weight,dCost,dMax,contro
     mpc.controlLevelNeg = Var(mpc.time , within = NonNegativeReals)
 
     # Define Objective functions
-    mpc.obj = Objective(expr = sum(mpc.weight[t]*(mpc.deltaSetPointPos[t]+mpc.deltaSetPointNeg[t])+ mpc.dCost[t]*(mpc.controlLevelPos[t]+mpc.controlLevelNeg[t] + mpc.controlLevel[t]) for t in mpc.time), sense = minimize )
+    mpc.obj = Objective(expr = sum(mpc.weight[t]*(mpc.deltaSetPointPos[t]+mpc.deltaSetPointNeg[t])+ mpc.cCost[t]*mpc.controlLevel[t] +mpc.dCost[t]*(mpc.controlLevelPos[t]+mpc.controlLevelNeg[t]) for t in mpc.time), sense = minimize )
 
     # Define Constraints
 
