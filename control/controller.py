@@ -31,7 +31,7 @@ time = []
 for i in range(169):
     time.append(i)
 
-SoCDiff_ini = readMeasurements(0,len(time),predSun,predWind,predDemand) # one week
+SoCDiff_ini = readMeasurements(1000,len(time),predSun,predWind,predDemand) # one week
 #SoCDiff_ini = readMeasurements(0,len(predDemand),predSun,predWind,predDemand) # one year
 SoCDiff = {time[i]: SoCDiff_ini[i] for i in range(len(time))}
 #print(SoCDiff_ini)
@@ -41,8 +41,8 @@ for i in range(len(SoCDiff_ini)):
     diffsum = diffsum + SoCDiff_ini[i]
 #print(diffsum)
 
-SoCIni = 20.0
-SoCRaw = [20.0]
+SoCIni = 55.0
+SoCRaw = [SoCIni]
 
 for i in range(len(time)-1):
     SoCRaw.append(SoCRaw[i] + SoCDiff_ini[i])
@@ -81,12 +81,15 @@ solver.solve(mpc, tee = True)
 #plot
 # plot the estimated SoC over the time horizon
 tempSoC = [mpc.SoC[i].value for i in mpc.time]
-print(tempSoC)
+gridPowerGive = [mpc.gridPowerGive[i].value for i in mpc.time]
+gridPowerTake = [mpc.gridPowerTake[i].value for i in mpc.time]
+realSoC = [tempSoC[i] - gridPowerGive[i] + gridPowerTake[i] for i in mpc.time]
+
 
 plt.subplot(3,1,1)
 plt.plot(time,tempSoC, c = '#0C7CBA', ls = '-') # plot the SOC
 plt.plot(time,setPoint_ini, c = 'black', ls = '--') # plot the set point
-plt.plot(time,SoCRaw, c = 'black', ls = '-') # plot the set point
+#plt.plot(time,SoCRaw, c = 'black', ls = '-') # plot the set point
 plt.xlabel("Time [hours]")
 plt.ylabel("State of Charge [%]")
 plt.title("State of charge of the battery over one time horizon")

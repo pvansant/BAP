@@ -38,7 +38,7 @@ def modelPredictiveControl(time,SoCIni,SoCDiff,setPoint,weight,dCost,dMax,contro
     mpc.SoCDiff = Param(mpc.time, initialize=SoCDiff, mutable=True)
     mpc.setPoint = Param(mpc.time, initialize=setPoint, mutable=True)
     mpc.weight = Param(mpc.time, initialize=weight, mutable=True)
-  #  mpc.dCost = Param(mpc.time, initialize=dCost, mutable=True )
+    mpc.dCost = Param(mpc.time, initialize=dCost, mutable=True )
     mpc.SoCIni = Param(initialize=SoCIni, mutable = True)
     mpc.controlLevelIni = Param(initialize=controlLevelIni, mutable = True)
     mpc.dMax = Param(initialize=dMax, mutable = True)
@@ -48,33 +48,34 @@ def modelPredictiveControl(time,SoCIni,SoCDiff,setPoint,weight,dCost,dMax,contro
     mpc.SoC = Var(mpc.time, within = Reals)
     mpc.deltaSetPointPos = Var(mpc.time , within = NonNegativeReals)
     mpc.deltaSetPointNeg = Var(mpc.time , within = NonNegativeReals)
-  #  mpc.controlLevelPos = Var(mpc.time , within = NonNegativeIntegers)
-  #  mpc.controlLevelNeg = Var(mpc.time , within = NonPositiveIntegers)
+    mpc.gridPowerTake = Var(mpc.time, within = NonNegativeReals)
+    mpc.gridPowerGive = Var(mpc.time, within = NonNegativeReals)
+    mpc.controlLevelPos = Var(mpc.time , within = NonNegativeIntegers)
+    mpc.controlLevelNeg = Var(mpc.time , within = NonNegativeReals)
 
     # Define Objective functions
-    #mpc.obj = Objective(expr = sum(mpc.weight[i]*(mpc.setPoint[i]-mpc.SoC[i]) for i in mpc.time), sense = minimize )
-    mpc.obj = Objective(expr = sum(mpc.weight[i]*(mpc.deltaSetPointPos[i]+mpc.deltaSetPointNeg[i]) for i in mpc.time), sense = minimize )
-    #mpc.obj = Objective(expr = sum(mpc.weight[i]*(mpc.SoC[i]-mpc.setPoint[i]) for i in mpc.IDX), sense = minimize )
-    #+ mpc.dCost[i]*(mpc.controlLevelPos[i]-mpc.controlLevelNeg[i])
+    mpc.obj = Objective(expr = sum(mpc.weight[t]*(mpc.deltaSetPointPos[t]+mpc.deltaSetPointNeg[t])+ mpc.dCost[t]*(mpc.controlLevelPos[t]+mpc.controlLevelNeg[t] + mpc.controlLevel[t]) for t in mpc.time), sense = minimize )
+
     # Define Constraints
-    
-    '''
-    def controlLevelPoscnstr(mpc, i):
-        constr = mpc.controlLevel[i]-mpc.controlLevel[i-1]
-        return constr == mpc.controlLevelPos[i]
-    mpc.controlLevelPoscnstr = Constraint( mpc.IDX, rule= controlLevelPoscnstr)
 
-    def controlLevelNegcnstr(mpc, i):
-        constr = mpc.controlLevel[i]-mpc.controlLevel[i-1]
-        return constr == mpc.controlLevelNeg[i]
-    mpc.controlLevelNegcnstr = Constraint( mpc.IDX, rule= controlLevelNegcnstr)
-    
+    def controlLevelNegcnstr(mpc, t):
+        if t == 0:
+            return Constraint.Skip
+        else:
+            constr = mpc.controlLevel[t]-mpc.controlLevel[t-1]
+            return constr == mpc.controlLevelPos[t] - mpc.controlLevelNeg[t]
+    mpc.controlLevelNegcnstr = Constraint( mpc.time, rule= controlLevelNegcnstr)
+        
+    def gridPowerGivecnstr(mpc, t):        
+        constr = mpc.SoC[t] - mpc.gridPowerGive[t]
+        return constr <= 100
+    mpc.gridPowerGivecnstr = Constraint( mpc.time, rule= gridPowerGivecnstr)
 
-    def deltaSetPointPoscnstr(mpc, i):
-        constr = mpc.SoC[i]-mpc.setPoint[i]
-        return constr == mpc.deltaSetPointPos[i]
-    mpc.deltaSetPointPoscnstr = Constraint( mpc.time, rule= deltaSetPointPoscnstr)
-    '''
+    def gridPowerTakecnstr(mpc, t):
+        constr = mpc.SoC[t] + mpc.gridPowerTake[t]
+        return constr >= 10
+    mpc.gridPowerTakecnstr = Constraint( mpc.time, rule= gridPowerTakecnstr)
+
     def deltaSetPointcnstr(mpc, t):
         constr = mpc.SoC[t]-mpc.setPoint[t]
         return constr == mpc.deltaSetPointPos[t] - mpc.deltaSetPointNeg[t]
@@ -109,7 +110,7 @@ def modelPredictiveControl(time,SoCIni,SoCDiff,setPoint,weight,dCost,dMax,contro
         if t == 0:
             return Constraint.Skip
         else:
-            Constrnt = (mpc.SoC[t] == mpc.SoC[t-1] + 139.85*mpc.controlLevel[t-1]/722 + mpc.SoCDiff[t-1] )
+            Constrnt = (mpc.SoC[t] == mpc.SoC[t-1] + 139.85*mpc.controlLevel[t-1]/722 + mpc.SoCDiff[t-1])
             return Constrnt
     mpc.constrSoC = Constraint( mpc.time, rule= constrSoC)
     
