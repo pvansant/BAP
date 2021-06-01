@@ -44,7 +44,6 @@ hourlyPowerData[:] = np.NaN
 i = 0
 w = np.ones(np.max(timeAsHour)+1)
 
-
 # mean for every hour
 for t in timeAsHour:
 
@@ -56,8 +55,20 @@ for t in timeAsHour:
 
     i += 1
 
+# replace all nans with the mean
+mean = np.nanmean(hourlyPowerData)      # calculate the mean
+for i in range(len(hourlyPowerData)):   # loop through all elements
+    if math.isnan(hourlyPowerData[i]):  # check for nans
+        hourlyPowerData[i] = mean       # replace nans with the mean
+
+
+### check for nans present
+# k = 0
+# for i in hourlyPowerData: 
+#     if math.isnan(i): print('error present at position ', k)
+#     k+=1
 
 # save the acquired array
-# np.save('processedSolarData_V1', hourlyPowerData)
+# np.save('processedSolarData_V2', hourlyPowerData)
 
 print('\n...finished\n\n')
