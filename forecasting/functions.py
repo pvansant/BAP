@@ -66,7 +66,17 @@ def retrieveWindData():
     return X, y
 
 
-# retrieveSolarData
+def retrieveSolarData():
+    y = np.load('processedSolarData_V2.npy')
+
+    try:
+        data = np.genfromtxt('forecasting/generationData/2019uurgeg_344_2011-2020.txt', 
+        dtype=float, delimiter=',', skip_header=33)
+        X = data[:,3:] # only relevant stuff; all rows of column 3 till end
+    except:
+        print('Error while retrieving X'); exit()
+
+    return X, y
 
 
 def retrieveDemandData():
