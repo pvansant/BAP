@@ -56,11 +56,15 @@ for t in timeAsHour:
     i += 1
 
 # replace all nans with the mean
-mean = np.nanmean(hourlyPowerData)      # calculate the mean
+replacementValue = np.nanmean(hourlyPowerData)      # calculate the mean
+nanCount = 0
 for i in range(len(hourlyPowerData)):   # loop through all elements
     if math.isnan(hourlyPowerData[i]):  # check for nans
-        hourlyPowerData[i] = mean       # replace nans with the mean
+        hourlyPowerData[i] = replacementValue       # replace nans with the mean
+        nanCount += 1
 
+print(nanCount, 'NaNs were replaced with', replacementValue)
+print('NaNs/datapoints =', nanCount/len(hourlyPowerData))
 
 ### check for nans present
 # k = 0
