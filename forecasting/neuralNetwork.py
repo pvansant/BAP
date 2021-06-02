@@ -8,13 +8,14 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' # suppress tf warnings
 import datetime as dt; start_time = dt.datetime.now()
 # display a "Run started" message
-print('\nRun started at ', start_time.strftime("%X"), '\n')
+print('\nRun started at', start_time.strftime("%X"), '\n')
 
 import matplotlib.pyplot as plt
 import numpy as np
 import functions as fs
 import sklearn as sk
 import sklearn.impute
+import math
 from keras.layers import Dense
 from keras.models import Sequential
 from keras.wrappers.scikit_learn import KerasRegressor
@@ -29,8 +30,24 @@ import tensorflow.python.util.deprecation as deprecation
 deprecation._PRINT_DEPRECATION_WARNINGS = False
 
 # X, y = fs.retrieveWindData()
-X, y = fs.retrieveDemandData()
+X, y = fs.retrieveSolarData()
+# X, y = fs.retrieveDemandData()
 
+print('X.shape:', X.shape)
+print('y.shape:', y.shape)
+print('X:\n', X)
+print('y:\n', y)
+
+
+### check for nans present
+# k = 0
+# for i in X.flatten(): 
+#     if math.isnan(i): print('error in X at position ', k)
+#     k+=1
+# k = 0
+# for i in y: 
+#     if math.isnan(i): print('error in y at position ', k)
+#     k+=1
 
 # splitting data in test and training sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.3, random_state=42)
@@ -42,6 +59,11 @@ X = imp.fit_transform(X)
 X_train = imp.fit_transform(X_train)
 X_test = imp.fit_transform(X_test)
 
+### check for nans present
+k = 0
+for i in y: 
+    if math.isnan(i): print('error in X at position ', k)
+    k+=1
 # defining certain variables
 epochs = 10
 batch_size = 100
@@ -55,6 +77,20 @@ def windBaselineModel():
     model = Sequential()
     model.add(Dense(32, input_dim=22, kernel_initializer='normal', activation='relu'))
     model.add(Dense(16, kernel_initializer='normal', activation='relu'))
+    model.add(Dense(16, kernel_initializer='normal', activation='relu'))
+    model.add(Dense(1, kernel_initializer='normal'))
+    # Compile model
+    model.compile(loss='mean_squared_error', optimizer='adam')
+    return model
+
+# define solar base model
+def solarBaselineModel():
+    # create model
+    model = Sequential()
+    model.add(Dense(256, input_dim=22, kernel_initializer='normal', activation='relu'))
+    model.add(Dense(128, kernel_initializer='normal', activation='relu'))
+    model.add(Dense(64, kernel_initializer='normal', activation='relu'))
+    model.add(Dense(32, kernel_initializer='normal', activation='relu'))
     model.add(Dense(16, kernel_initializer='normal', activation='relu'))
     model.add(Dense(1, kernel_initializer='normal'))
     # Compile model
@@ -76,7 +112,8 @@ def demandBaselineModel():
     return model
 
 # model = KerasRegressor(build_fn=windBaselineModel, epochs=epochs, batch_size=batch_size, verbose=verbose)
-model = KerasRegressor(build_fn=demandBaselineModel, epochs=epochs, batch_size=batch_size, verbose=verbose)
+model = KerasRegressor(build_fn=solarBaselineModel, epochs=epochs, batch_size=batch_size, verbose=verbose)
+# model = KerasRegressor(build_fn=demandBaselineModel, epochs=epochs, batch_size=batch_size, verbose=verbose)
 
 
 # evaluate model with standardized dataset
@@ -90,7 +127,7 @@ pipeline = Pipeline(estimators)
 
 
 ### make a single model and evaluate it with the test set
-# MSE = fs.trainWithoutCurve(X_train, y_train, pipeline)
+MSE = fs.trainWithoutCurve(X_train, y_train, pipeline)
 
 # y_pred = pipeline.predict(X_test)
 # testMSE = mean_squared_error(y_test, y_pred)
