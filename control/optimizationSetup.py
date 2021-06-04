@@ -45,7 +45,7 @@ def modelPredictiveControl(time,SoCIni,SoCDiff,setPoint,weight,dCost,cCost,dMax,
     mpc.dMax = Param(initialize=dMax, mutable = True)
     
     # Define Variables
-    mpc.controlLevel = Var(mpc.time, within = Integers, bounds = (0,3))
+    mpc.controlLevel = Var(mpc.time, within = Integers, bounds = (0,4))
     mpc.SoC = Var(mpc.time, within = Reals)
     mpc.deltaSetPointPos = Var(mpc.time , within = NonNegativeReals)
     mpc.deltaSetPointNeg = Var(mpc.time , within = NonNegativeReals)
