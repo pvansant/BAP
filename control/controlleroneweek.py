@@ -46,7 +46,7 @@ for i in range(169):
 # This will initialize the indexed Parameters for the Pyomo model
 
 # Initialize the difference in state of charge due to the predicted demand and generation
-SoCDiff_ini = readPredictions(5000,len(time),predSun,predWind,predDemand) # one week
+SoCDiff_ini = readPredictions(0,len(time),predSun,predWind,predDemand) # one week
 SoCDiff = {time[i]: SoCDiff_ini[i] for i in range(len(time))} # Make it a Dictionary
 
 # Initialize the setpoint the controller tries to reach, this will determine the objective in the Pyomo model
