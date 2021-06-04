@@ -6,16 +6,12 @@ def readPredictions(index,length,sun,wind,demand):
     SoCChange = []
     length = length +index
     for i in range(index,length):
-        SoCChange.append((sun[i] + wind[i]*0.5 - demand[i])/772.0)
+        SoCChange.append((sun[i] + wind[i] - demand[i])/772.0)
         #SoCChange.append((sun[i] + wind[i] - demand[i])/772.0)
     return SoCChange
 
-def readMeasurement(index,length,sun,wind,demand): #TODO 
-    SoCChange = []
-    length = length +index
-    for i in range(index,length):
-        SoCChange.append((sun[i] + wind[i]*0.5 - demand[i])/772.0)
-        #SoCChange.append((sun[i] + wind[i] - demand[i])/772.0)
+def readMeasurement(index,sun,wind,demand): 
+    SoCChange = (sun[index] + wind[index] - demand[index])/772.0
     return SoCChange
 
 def determineControlSoC(index, controlLevel):
@@ -25,9 +21,9 @@ def determineControlSoC(index, controlLevel):
 
     if controlLevel > 0:
         if hour == 20 or hour == 21 or hour == 4 or hour == 5:
-            ControlSoC -= 60
+            ControlSoC += 60
         elif hour > 21 or hour < 4:
-            ControlSoC -= 120
+            ControlSoC += 120
         else:
             ControlSoC += 0
         
@@ -36,7 +32,7 @@ def determineControlSoC(index, controlLevel):
                 for i in range(12):
                     temp = rnd.randint(1,1000)
                     if temp < 408:
-                        ControlSoC -= 70
+                        ControlSoC += 70
             else:
                 ControlSoC += 0
             if controlLevel > 2:
@@ -44,7 +40,7 @@ def determineControlSoC(index, controlLevel):
                     for i in range(12):
                         temp = rnd.randint(1,1000)
                         if temp < 400:
-                            ControlSoC -= 10.5
+                            ControlSoC += 10.5
                 else:
                     ControlSoC += 0
                 if controlLevel >3:
@@ -52,7 +48,7 @@ def determineControlSoC(index, controlLevel):
                         for i in range(12):
                             temp = rnd.randint(1,1000)
                             if temp < 250:
-                                ControlSoC -= 281.25
+                                ControlSoC += 281.25
     
     ControlSoC = ControlSoC/722
                             
