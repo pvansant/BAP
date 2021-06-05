@@ -2,29 +2,28 @@
 '''
 Authors: Aart Rozendaal and Pieter Van Santvliet
 Description: In this script, the optimization for the mpc is initialized. 
-Constants and variables are defined and a model is created.
+Parameters and variables are defined and a model is created.
 '''
-
 import os
-
 # Importing libraries
 from pyomo.environ import *
 from pyomo.dae import *
 
 '''
+function: create and initialize the optimization for the mpc
 Inputs:
-SoC                     - integer respresenting SoC
-SoCDiff                 - Set of length 169 with the predicted difference in SoC for the coming hour
+time                    - list of length 169 representing every hour in the coming week
+SoCIni                  - integer respresenting the SoC at t = 0
+SoCDiff                 - List of length 169 with the predicted difference in time
 setPoint                - Set of length 169 with the Setpoint for every hour
-weight                  - Set of length 169 with the weight of the MSE for every hour
-dCost                   - Set of length 169 with the weigth penalty for changing the control
+weight                  - Set of length 169 with the associated weight for deviation from the setpoint for every hour
+dCost                   - Set of length 169 with the associated weight penalty for changing the control level
+cCost                   - Set of length 169 with the associated weight for deviation of the control level from level zero
 dMax                    - integer respresenting the maximum change in the control signal per hour
 controlLevelIni         - integer respresenting current control level
-
 output:
-Model
+Mpc                     - the model for the optimizer of the model predictive controller
 '''
-
 
 def modelPredictiveControl(time,SoCIni,SoCDiff,setPoint,weight,dCost,cCost,dMax,controlLevelIni):
 
@@ -49,8 +48,6 @@ def modelPredictiveControl(time,SoCIni,SoCDiff,setPoint,weight,dCost,cCost,dMax,
     mpc.SoC = Var(mpc.time, within = Reals)
     mpc.deltaSetPointPos = Var(mpc.time , within = NonNegativeReals)
     mpc.deltaSetPointNeg = Var(mpc.time , within = NonNegativeReals)
-    mpc.gridPowerTake = Var(mpc.time, within = NonNegativeReals)
-    mpc.gridPowerGive = Var(mpc.time, within = NonNegativeReals)
     mpc.controlLevelPos = Var(mpc.time , within = NonNegativeIntegers)
     mpc.controlLevelNeg = Var(mpc.time , within = NonNegativeReals)
 
@@ -58,7 +55,7 @@ def modelPredictiveControl(time,SoCIni,SoCDiff,setPoint,weight,dCost,cCost,dMax,
     mpc.obj = Objective(expr = sum(mpc.weight[t]*(mpc.deltaSetPointPos[t]+mpc.deltaSetPointNeg[t])+ mpc.cCost[t]*mpc.controlLevel[t] +mpc.dCost[t]*(mpc.controlLevelPos[t]+mpc.controlLevelNeg[t]) for t in mpc.time), sense = minimize )
 
     # Define Constraints
-
+    # constraint calculating absolute value for change in Control level
     def controlLevelNegcnstr(mpc, t):
         if t == 0:
             return Constraint.Skip
@@ -66,22 +63,14 @@ def modelPredictiveControl(time,SoCIni,SoCDiff,setPoint,weight,dCost,cCost,dMax,
             constr = mpc.controlLevel[t]-mpc.controlLevel[t-1]
             return constr == mpc.controlLevelPos[t] - mpc.controlLevelNeg[t]
     mpc.controlLevelNegcnstr = Constraint( mpc.time, rule= controlLevelNegcnstr)
-        
-    def gridPowerGivecnstr(mpc, t):        
-        constr = mpc.SoC[t] - mpc.gridPowerGive[t]
-        return constr <= 100
-    mpc.gridPowerGivecnstr = Constraint( mpc.time, rule= gridPowerGivecnstr)
 
-    def gridPowerTakecnstr(mpc, t):
-        constr = mpc.SoC[t] + mpc.gridPowerTake[t]
-        return constr >= 10
-    mpc.gridPowerTakecnstr = Constraint( mpc.time, rule= gridPowerTakecnstr)
-
+    # constraint calculating absolute value for change in SoC
     def deltaSetPointcnstr(mpc, t):
         constr = mpc.SoC[t]-mpc.setPoint[t]
         return constr == mpc.deltaSetPointPos[t] - mpc.deltaSetPointNeg[t]
     mpc.deltaSetPointcnstr = Constraint( mpc.time, rule= deltaSetPointcnstr)
     
+    # constraint constraints the controller level from changing more than one level up in an hour
     def constrDMax(mpc, t):
         if t == 0:
             return Constraint.Skip
@@ -90,6 +79,7 @@ def modelPredictiveControl(time,SoCIni,SoCDiff,setPoint,weight,dCost,cCost,dMax,
             return Constrnt
     mpc.constrDMax = Constraint( mpc.time, rule= constrDMax )
     
+    # constraint constraints the controller level from changing more than one level down in an hour
     def constrDMin(mpc, t):
         if t == 0:
             return Constraint.Skip
@@ -98,8 +88,10 @@ def modelPredictiveControl(time,SoCIni,SoCDiff,setPoint,weight,dCost,cCost,dMax,
             return Constrnt
     mpc.constrDMin = Constraint( mpc.time, rule= constrDMin )    
     
+    # constraint initializes the first value of the Control level
     mpc.controlSoCInicnstr = Constraint(expr =  mpc.controlLevel[0] == mpc.controlLevelIni)
 
+    # constraint initializes the first value of the SoC
     def constrSoCini(mpc,t): 
         if t == 0:
             return mpc.SoC[t] == mpc.SoCIni
@@ -107,6 +99,7 @@ def modelPredictiveControl(time,SoCIni,SoCDiff,setPoint,weight,dCost,cCost,dMax,
             return Constraint.Skip
     mpc.constrSoCini = Constraint( mpc.time, rule= constrSoCini)
     
+    # constraint calculates the next value of the SoC
     def constrSoC(mpc,t): 
         if t == 0:
             return Constraint.Skip
