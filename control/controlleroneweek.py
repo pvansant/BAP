@@ -1,11 +1,10 @@
 '''
 Authors: Aart Rozendaal and Pieter Van Santvliet
-Description: In this script, the functionality of the controller is programmed
+Description: In this script, the functionality of the controller for one week is programmed
 It used different functions and a loop to control the system.
 '''
 
 import os
-
 from numpy.core.function_base import linspace
 from numpy.lib.function_base import append, diff
 os.system('cls') # clears the command window
@@ -46,7 +45,7 @@ for i in range(169):
 # This will initialize the indexed Parameters for the Pyomo model
 
 # Initialize the difference in state of charge due to the predicted demand and generation
-SoCDiff_ini = readPredictions(0,len(time),predSun,predWind,predDemand) # one week
+SoCDiff_ini = readPredictions(5000,len(time),predSun,predWind,predDemand) # one week
 SoCDiff = {time[i]: SoCDiff_ini[i] for i in range(len(time))} # Make it a Dictionary
 
 # Initialize the setpoint the controller tries to reach, this will determine the objective in the Pyomo model
@@ -94,27 +93,13 @@ solver.solve(mpc, tee = False) # solving the model, tee = true provides extra in
 
 # Read values from the model
 tempSoC = [mpc.SoC[i].value for i in mpc.time]
-gridPowerGive = [mpc.gridPowerGive[i].value for i in mpc.time]
-gridPowerTake = [mpc.gridPowerTake[i].value for i in mpc.time]
-realSoC = [tempSoC[i] - gridPowerGive[i] + gridPowerTake[i] for i in mpc.time]
-realSoCUnder = 0
-for i in range(len(time)):
-    if tempSoC[i] < 10:
-        realSoCUnder += 1
-
-print('hours down with controller: ',realSoCUnder)
 
 # Calculate what happens without the controller
 SoCRaw = [SoCIni]
 for i in range(len(time)-1):
     SoCRaw.append(SoCRaw[i] + SoCDiff_ini[i])
-SoCRawUnder = 0
-for i in range(len(time)):
-    if SoCRaw[i] < 10:
-        SoCRawUnder += 1
 
-print('hours down without controller: ',SoCRawUnder)
-
+# plot the SoC over time
 plt.subplot(3,1,1)
 plt.plot(time,tempSoC, c = '#0C7CBA', ls = '-') # plot the SOC
 plt.plot(time,setPoint_ini, c = 'black', ls = '--') # plot the set point
@@ -131,7 +116,7 @@ plt.plot(time,tempControlLevel, marker ='o', c = '#0C7CBA', ls ='')
 plt.xlabel("Time [hours]")
 plt.ylabel("control level")
 plt.title("Control level over one time horizon")
-
+# plot the difference when using the controller or not using the controller
 SoCDiffRaw = []
 for i in range(len(time)):
     SoCDiffRaw.append(tempSoC[i] - SoCRaw[i])
@@ -141,7 +126,8 @@ plt.xlabel("Time [hours]")
 plt.ylabel("\u0394SoC [%]")
 plt.title("Difference in SoC due to the controller action")
 
-plt.show()
-
 # print the runtime
 print('\nRuntime was', (dt.datetime.now() - start_time).total_seconds(), 'seconds')
+
+#show plot
+plt.show()
