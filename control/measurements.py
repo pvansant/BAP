@@ -2,10 +2,9 @@
 Authors: Aart Rozendaal and Pieter Van Santvliet
 Description: In this script, three functions are writen regarding reading prediction data, reading the current measurement and calculating the influence of the controller using the random library and the current hour.
 '''
-
+# add libraries
 import numpy as np
 import random as rnd
-
 
 '''
 Function: calculates the predicted change in SoC due to the predictions
@@ -34,7 +33,6 @@ output: SoCChange - actual change in SoC of the battery due to the measured gene
 def readMeasurement(index,sun,wind,demand): 
     SoCChange = (sun[index] + wind[index] - demand[index])/772.0 # read the measured generation and demand and scale Wh to SoC
     return SoCChange # return Change in SoC
-
 
 '''
 Function: calculates the effect of the controller at the current hour using the control level
@@ -77,6 +75,5 @@ def determineControlSoC(index, controlLevel):
                                 ControlSoC += 281.25# when using it it can only use one on high and one on medium
     
     ControlSoC = ControlSoC/722 # convert Wh to SoC
-                            
-                        
+                                                  
     return ControlSoC # return the change in SoC
