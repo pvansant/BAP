@@ -5,7 +5,6 @@ It used different functions and a loop to control the system.
 '''
 
 import os
-
 from numpy.core.function_base import linspace
 from numpy.lib.function_base import append, diff
 os.system('cls') # clears the command window
@@ -18,19 +17,22 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pyomo.environ import *
 from pyomo.dae import *
-from measurements import readMeasurements
+from measurements import readMeasurement
+from measurements import readPredictions
+from measurements import determineControlSoC
 from optimizationSetup import modelPredictiveControl
 
 # load predictions 
-data = np.load('data_V1.npz')
+data = np.load('data_V2.npz')
 predSun = data['predSun']
 predWind = data['predWind']
 predDemand = data['predDemand']
 
 # load actual data
-#Sun = data['predSun']
-#Wind = data['predWind']
-#Demand = data['predDemand']
+data1 = np.load('data_original_V3.npz')
+sun = predSun
+wind = data1['windOutput']
+demand = data1['demandOutput']
 
 # Setup input data for the initialization of the model
 # Initialize the time array, this represents all hours in the upcoming week.
@@ -43,7 +45,7 @@ for i in range(169):
 # This will initialize the indexed Parameters for the Pyomo model
 
 # Initialize the difference in state of charge due to the predicted demand and generation
-SoCDiff_ini = readMeasurements(1000,len(time),predSun,predWind,predDemand) # one week
+SoCDiff_ini = readPredictions(0,len(time),predSun,predWind,predDemand) # one week
 SoCDiff = {time[i]: SoCDiff_ini[i] for i in range(len(time))} # Make it a Dictionary
 
 # Initialize the setpoint the controller tries to reach, this will determine the objective in the Pyomo model
@@ -55,7 +57,7 @@ setPoint = {time[i]: setPoint_ini[i] for i in range(len(time))} # Make it a Dict
 # Initialize the weight for the deviation of the SoC from the setpoint, is used by the objective
 weight_ini = []
 for i in range(len(time)):
-    weight_ini.append(float(len(time)-i)) # The weight decreases linearly over time
+    weight_ini.append(1/(1+i)) # The weight decreases linearly over time
 weight = {time[i]: weight_ini[i] for i in range(len(time))}# Make it a Dictionary
 
 # Initialize the weight for the change in control signal, is used by the objective
@@ -89,72 +91,132 @@ solver = SolverFactory('glpk') # glpk is a linear solver that can handle discret
 # Solve the model
 solver.solve(mpc, tee = False) # solving the model, tee = true provides extra information on the solution of the solver
 
-
+# prepare lists for plotting
+# general
+timePlot = [0]
+setPointPlot = [60.0]
+# With controller
+SoCPlot = [SoCIni]
+controlLevelPlot = [controlLevelIni]
+gridPowerGivePlot = [0]
+gridPowerTakePlot = [0]
+# without controller
+SoCRawPlot = [SoCIni]
+gridPowerGiveRawPlot = [0]
+gridPowerTakeRawPlot = [0]
 
 #loop
-    # Retrieve the measurements (the real data set of k=0)
+# optimize for the coming week every hour
+for t in range(1,8760-(len(time)+1)):
+    #update control level  
+    controlLevelIni = mpc.controlLevel[1].value
 
-    # Make predictions using the ANN for demand and generation (for k = 1 till k = 169 (7 days))
+    # Retrieve the measurements when using the controller
+    prevControl = determineControlSoC(t-1, mpc.controlLevel[0].value)
+    if (SoCPlot[-1] + readMeasurement(t,sun,wind,demand) + prevControl > 100):
+        SoCIni = 100
+        gridPowerGive = abs(SoCPlot[-1] + readMeasurement(t,sun,wind,demand) + prevControl - 100)
+        gridPowerTake = 0
+    elif (SoCPlot[-1] + readMeasurement(t,sun,wind,demand) + prevControl < 10):
+        SoCIni = 10
+        gridPowerGive = 0
+        gridPowerTake = abs(10 - (SoCPlot[-1] + readMeasurement(t,sun,wind,demand) + prevControl))
+    else:
+        SoCIni = SoCPlot[-1] + readMeasurement(t,sun,wind,demand) + prevControl
+        gridPowerGive = 0
+        gridPowerTake = 0
 
-    # Solve the equations using the pyomo optimizer
+    # Retrieve the measurements without using the controller
+    if SoCRawPlot[-1] + readMeasurement(t,sun,wind,demand) >100:
+        SoCRaw = 100
+        gridPowerGiveRaw = abs(SoCPlot[-1] + readMeasurement(t,sun,wind,demand) - 100)
+        gridPowerTakeRaw = 0
+    elif (SoCPlot[-1] + readMeasurement(t,sun,wind,demand)< 10):
+        SoCRaw = 10
+        gridPowerGiveRaw = 0
+        gridPowerTakeRaw = abs(10 - (SoCPlot[-1] + readMeasurement(t,sun,wind,demand) ))
+    else:
+        SoCRaw = SoCPlot[-1] + readMeasurement(t,sun,wind,demand)
+        gridPowerGiveRaw = 0
+        gridPowerTakeRaw = 0
 
-    # Implement the first control strategy
+    # Make predictions using the ANN for demand and generation and prep for the model
+    SoCDiff_ini = readPredictions(t,len(time),predSun,predWind,predDemand)
+    SoCDiff = {time[i]: SoCDiff_ini[i] for i in range(len(time))}    
 
-    # Move one time step further and loop back
+    # Solve the pyomo optimizer model
+    mpc = modelPredictiveControl(time,SoCIni,SoCDiff,setPoint,weight,dCost,cCost,dMax,controlLevelIni)
+    solver.solve(mpc, tee = False)
 
-############   plot
+    # update plot values for both with and without controller
+    timePlot.append(t)
+    SoCPlot.append(SoCIni)
+    setPointPlot.append(60.0)
+    controlLevelPlot.append(controlLevelIni)
+    gridPowerGivePlot.append(gridPowerGive)
+    gridPowerTakePlot.append(gridPowerTake)
+    SoCRawPlot.append(SoCRaw)
+    gridPowerGiveRawPlot.append(gridPowerGiveRaw)
+    gridPowerTakeRawPlot.append(gridPowerTakeRaw)
 
-# Read values from the model
-tempSoC = [mpc.SoC[i].value for i in mpc.time]
-gridPowerGive = [mpc.gridPowerGive[i].value for i in mpc.time]
-gridPowerTake = [mpc.gridPowerTake[i].value for i in mpc.time]
-realSoC = [tempSoC[i] - gridPowerGive[i] + gridPowerTake[i] for i in mpc.time]
-realSoCUnder = 0
-for i in range(len(time)):
-    if tempSoC[i] < 10:
-        realSoCUnder += 1
+    # print confirmation every 25 cycles
+    if t%25 == 0:
+        print('cycle: ', t , ' is done')
+    
+    # loop back and repeat for the next hours
 
-print('hours down with controller: ',realSoCUnder)
+#plot relevant data for both with and without controller to compare the effect of the controller
+print('\n------ With controller ------\n')
+print('power delivered to grid:{:.2f}Wh'.format(sum(gridPowerGivePlot)))
+k=0
+for i in gridPowerGivePlot: 
+    if i>0: 
+        k += 1
+print('Hours of power delivered to grid: {} hours, which is {:.2f} %'.format(k,k/len(gridPowerGivePlot)*100))
+print('power taken from grid:{:.2f}Wh'.format(sum(gridPowerTakePlot)))
+k=0
+for i in gridPowerTakePlot: 
+    if i>0: 
+        k += 1
+print('Hours of power taken from grid: {} hours, which is {:.2f} %'.format(k,k/len(gridPowerGivePlot)*100))
 
-# Calculate what happens without the controller
-SoCRaw = [SoCIni]
-for i in range(len(time)-1):
-    SoCRaw.append(SoCRaw[i] + SoCDiff_ini[i])
-SoCRawUnder = 0
-for i in range(len(time)):
-    if SoCRaw[i] < 10:
-        SoCRawUnder += 1
+print('\n------ Without controller ------\n')
+print('power delivered to grid:{:.2f}Wh'.format(sum(gridPowerGiveRawPlot)))
+k=0
+for i in gridPowerGiveRawPlot: 
+    if i>0: 
+        k += 1
+print('Hours of power delivered to grid: {} hours, which is {:.2f} %'.format(k,k/len(gridPowerGiveRawPlot)*100))
+print('power taken from grid:{:.2f}Wh'.format(sum(gridPowerTakeRawPlot)))
+k=0
+for i in gridPowerTakeRawPlot: 
+    if i>0: 
+        k += 1
+print('Hours of power taken from grid: {} hours, which is {:.2f} %'.format(k,k/len(gridPowerGiveRawPlot)*100))
 
-print('hours down without controller: ',SoCRawUnder)
-
-plt.subplot(3,1,1)
-plt.plot(time,tempSoC, c = '#0C7CBA', ls = '-') # plot the SOC
-plt.plot(time,setPoint_ini, c = 'black', ls = '--') # plot the set point
-plt.plot(time,SoCRaw, c = 'black', ls = '-') # plot the SoC without the controller
+# Plot SoC over time
+plt.subplot(2,1,1)
+plt.plot(timePlot,SoCPlot, c = '#0C7CBA', ls = '-') # plot the SOC
+plt.plot(timePlot,setPointPlot, c = 'black', ls = '--') # plot the set point
+plt.plot(timePlot,SoCRawPlot, c = 'black', ls = '-') # plot the SoC without the controller
 plt.xlabel("Time [hours]")
 plt.ylabel("State of Charge [%]")
 plt.title("State of charge of the battery over one time horizon")
 
-# plot the optimized control level over the time horizon
-tempControlLevel = (mpc.controlLevel[i].value for i in time)
-tempControlLevel = list(tempControlLevel)
-plt.subplot(3,1,2)
-plt.plot(time,tempControlLevel, marker ='o', c = '#0C7CBA', ls ='')
+# plot the optimized control level over the time 
+plt.subplot(2,1,2)
+plt.plot(timePlot,controlLevelPlot, marker ='o', c = '#0C7CBA', ls ='')
 plt.xlabel("Time [hours]")
 plt.ylabel("control level")
 plt.title("Control level over one time horizon")
 
-SoCDiffRaw = []
-for i in range(len(time)):
-    SoCDiffRaw.append(tempSoC[i] - SoCRaw[i])
-plt.subplot(3,1,3)
-plt.plot(time,SoCDiffRaw, c = '#0C7CBA', ls ='-')
-plt.xlabel("Time [hours]")
-plt.ylabel("\u0394SoC [%]")
-plt.title("Difference in SoC due to the controller action")
-
-plt.show()
-
 # print the runtime
 print('\nRuntime was', (dt.datetime.now() - start_time).total_seconds(), 'seconds')
+
+# show plot
+plt.show()
+
+
+
+
 
