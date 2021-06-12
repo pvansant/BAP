@@ -67,7 +67,7 @@ def retrieveWindData():
 
 
 def retrieveSolarData():
-    y = np.load('processedSolarData_V2.npy')
+    y = np.load('processedSolarData_V3.npy')
 
     try:
         data = np.genfromtxt('forecasting/generationData/2019uurgeg_344_2011-2020.txt', 
@@ -101,9 +101,10 @@ def retrieveDemandData():
         # make a date and season from the date info
         time = dt.datetime(year, month, day)
         season = time.month%12//3+1 # month2season: from https://stackoverflow.com/a/44124490
+        month = time.month
 
-        # timeInfo will contain the season and the daynumber (%u)
-        timeInfo = np.append(timeInfo, np.array([[season,time.weekday()]]), axis=0)
+        # timeInfo will contain the month and the daynumber (%u)
+        timeInfo = np.append(timeInfo, np.array([[month,time.weekday()]]), axis=0)
 
     # the date-column is replaced by a season-number and daynumber column
     X = np.append(timeInfo, np.delete(X,0,1), 1)

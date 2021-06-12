@@ -25,21 +25,29 @@ from sklearn.model_selection import KFold, cross_val_score, train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import GridSearchCV
+from playsound import playsound
+
 
 
 # suppress depreciation warnings
 import tensorflow.python.util.deprecation as deprecation
 deprecation._PRINT_DEPRECATION_WARNINGS = False
 
-X, y = fs.retrieveSolarData()
+print('Libraries Imported\n')
+
+# X, y = fs.retrieveSolarData()
 # X, y = fs.retrieveWindData()
-# X, y = fs.retrieveDemandData()
+X, y = fs.retrieveDemandData()
 
 # print('X.shape:', X.shape)
 # print('y.shape:', y.shape)
 # print('X:\n', X)
 # print('y:\n', y)
 
+# print('the max of y is', np.max(y))
+# print('the mean of y is', np.mean(y))
+# print('the mean of nonzero y is', y[np.nonzero(y)].mean())
+# print('the std of y is', np.std(y))
 
 ### check for nans present
 # k = 0
@@ -66,110 +74,92 @@ k = 0
 for i in y: 
     if math.isnan(i): print('error in X at position ', k)
     k+=1
-
 # defining certain variables
+epochs = 1000
+batch_size = 500
 verbose = 0         # 0 to show nothing; 1 or 2 to show the progress
-n_splits = 10
+n_splits = 2
 
 # from https://machinelearningmastery.com/regression-tutorial-keras-deep-learning-library-python/
 
 # define solar base model
-def solarBaselineModel():
+def solarBaselineModel(neurons1=1, neurons2=1, neurons3=1):
     # create model
     model = Sequential()
-    model.add(Dense(20, input_dim=22, kernel_initializer='normal', activation='relu'))
-    model.add(Dense(5, kernel_initializer='normal', activation='relu'))
-    model.add(Dense(30, kernel_initializer='normal', activation='relu'))
+
+    model.add(Dense(neurons1, input_dim=22, kernel_initializer='normal', activation='relu'))
+    model.add(Dense(neurons2, kernel_initializer='normal', activation='relu'))
+    model.add(Dense(neurons3, kernel_initializer='normal', activation='relu'))
+
     model.add(Dense(1, kernel_initializer='normal'))
     # Compile model
     model.compile(loss='mean_squared_error', optimizer='adam')
     return model
 
 # define generation base model
-def windBaselineModel():
+def windBaselineModel(neurons1=1, neurons2=1, neurons3=1):
     # create model
     model = Sequential()
-    model.add(Dense(20, input_dim=22, kernel_initializer='normal', activation='relu'))
-    model.add(Dense(5, kernel_initializer='normal', activation='relu'))
-    model.add(Dense(25, kernel_initializer='normal', activation='relu'))
+    model.add(Dense(neurons1, input_dim=22, kernel_initializer='normal', activation='relu'))
+    model.add(Dense(neurons2, kernel_initializer='normal', activation='relu'))
+    model.add(Dense(neurons3, kernel_initializer='normal', activation='relu'))
     model.add(Dense(1, kernel_initializer='normal'))
     # Compile model
     model.compile(loss='mean_squared_error', optimizer='adam')
     return model
 
 # define demand base model
-def demandBaselineModel():
+def demandBaselineModel(neurons1=1, neurons2= 1, neurons3=1, neurons4=1, neurons5=1):
     # create model
     model = Sequential()
-    model.add(Dense(150, input_dim=7, kernel_initializer='normal', activation='relu'))
-    model.add(Dense(200, kernel_initializer='normal', activation='relu'))
-    model.add(Dense(50, kernel_initializer='normal', activation='relu'))
-    model.add(Dense(25, kernel_initializer='normal', activation='relu'))
-    model.add(Dense(20, kernel_initializer='normal', activation='relu'))
+    model.add(Dense(neurons1, input_dim=7, kernel_initializer='normal', activation='relu'))
+    model.add(Dense(neurons2, kernel_initializer='normal', activation='relu'))
+    model.add(Dense(neurons3, kernel_initializer='normal', activation='relu'))
+    model.add(Dense(neurons4, kernel_initializer='normal', activation='relu'))
+    model.add(Dense(neurons5, kernel_initializer='normal', activation='relu'))
     model.add(Dense(1, kernel_initializer='normal'))
     # Compile model
     model.compile(loss='mean_squared_error', optimizer='adam')
     return model
 
-### solar
-batch_size = 200
-epochs = 500
-### wind
-# batch_size = 200
-# epochs = 200
-### demand
-# batch_size = 500
-# epochs = 1000
-
-model = KerasRegressor(build_fn=solarBaselineModel, epochs=epochs, batch_size=batch_size, verbose=verbose)
+# model = KerasRegressor(build_fn=solarBaselineModel, epochs=epochs, batch_size=batch_size, verbose=verbose)
 # model = KerasRegressor(build_fn=windBaselineModel, epochs=epochs, batch_size=batch_size, verbose=verbose)
-# model = KerasRegressor(build_fn=demandBaselineModel, epochs=epochs, batch_size=batch_size, verbose=verbose)
+model = KerasRegressor(build_fn=demandBaselineModel, epochs=epochs, batch_size=batch_size, verbose=verbose)
 
 
-# evaluate model with standardized dataset
-estimators = []
-estimators.append(('standardize', StandardScaler()))
-estimators.append(('mlp', model))
-pipeline = Pipeline(estimators)
 
-### load an existing model
-# model = keras.models.load_model('weatherForecasting/anotherTest')
+# define the grid search parameters
+# batch_size = [200, 500, 1000]
+# epochs = [10, 25, 50, 100, 200, 500, 1000, 2000]
+neurons1 = [150, 300]
+neurons2 = [100, 200]
+neurons3 = [50, 100]
+neurons4 = [25, 50]
+neurons5 = [10, 20]
 
-
-### make a single model and evaluate it with the test set
-# MSE = fs.trainWithoutCurve(X_train, y_train, model)
-
-# y_pred = model.predict(X_test)
-# testMSE = mean_squared_error(y_test, y_pred)
-# testRootMSE = MSE**0.5
-# print('test rmse',testRootMSE)
-# print('test relative rmse',testRootMSE/30800)
+# neurons1 = [15, 20, 25]
+# neurons2 = [10, 15, 20, 25, 30]
 
 
-### make multiple models using cross_val_score and evaluate it using validation sets from the training set
-# MSE, STD = fs.performCrossValidation(X_train, y_train, n_splits, pipeline)
+# param_grid = dict(neurons=neurons, batch_size=batch_size, epochs=epochs)
+# param_grid = dict(batch_size=batch_size, epochs=epochs)
+# param_grid = dict(neurons1=neurons1)
+# param_grid = dict(neurons1=neurons1, neurons2=neurons2)
+# param_grid = dict(neurons1=neurons1, neurons2=neurons2, neurons3=neurons3)
+param_grid = dict(neurons1=neurons1, neurons2=neurons2, neurons3=neurons3, neurons4=neurons4, neurons5=neurons5)
 
 
-### print the results
-# fs.printTrainingResults(X_train, epochs, batch_size, n_splits, solarBaselineModel, MSE)
-# print('for demand; relative root mse:',MSE**0.5/30800)
-
-
-### make a single model (without the pipeline) and show the learning curve
-# fs.trainWithCurve(X_train, y_train, model)
-
-
-### save the model
-# model.model.save('weatherForecasting/savedModel')
-
-
-### save the prediction
-# MSE = fs.trainWithoutCurve(X_train, y_train, model)
-# y_pred = model.predict(X)
-# np.save('predictedDemand_V1', y_pred)
-
-
+grid = GridSearchCV(estimator=model, param_grid=param_grid, n_jobs=-1, cv=3)
+grid_result = grid.fit(X, y)
+# summarize results
+print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
+means = grid_result.cv_results_['mean_test_score']
+stds = grid_result.cv_results_['std_test_score']
+params = grid_result.cv_results_['params']
+for mean, stdev, param in zip(means, stds, params):
+    print("%f (%f) with: %r" % (mean, stdev, param))
 
 
 # print the runtime
 print('\nRuntime was', (dt.datetime.now() - start_time).total_seconds(), 'seconds')
+playsound('C:/Users/piete/OneDrive/Documents/My Education/06 BAP/Code/sound.wav')

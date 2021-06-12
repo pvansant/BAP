@@ -60,19 +60,20 @@ replacementValue = np.nanmean(hourlyPowerData)      # calculate the mean
 nanCount = 0
 for i in range(len(hourlyPowerData)):   # loop through all elements
     if math.isnan(hourlyPowerData[i]):  # check for nans
-        hourlyPowerData[i] = replacementValue       # replace nans with the mean
+        hourlyPowerData[i] = hourlyPowerData[i-24]
+        # hourlyPowerData[i] = replacementValue       # replace nans with the mean
         nanCount += 1
 
-print(nanCount, 'NaNs were replaced with', replacementValue)
-print('NaNs/datapoints =', nanCount/len(hourlyPowerData))
+# print('{} NaNs were replaced with {:.1f}'.format(nanCount, replacementValue))
+print('NaNs per total amount of datapoints = {:.3f}'.format(nanCount/len(hourlyPowerData)))
 
 ### check for nans present
-# k = 0
-# for i in hourlyPowerData: 
-#     if math.isnan(i): print('error present at position ', k)
-#     k+=1
+k = 0
+for i in hourlyPowerData: 
+    if math.isnan(i): print('error present at position ', k)
+    k+=1
 
 # save the acquired array
-# np.save('processedSolarData_V2', hourlyPowerData)
+np.save('numpyDataFiles/processedSolarData_V3', hourlyPowerData)
 
 print('\n...finished\n\n')
