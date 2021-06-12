@@ -31,25 +31,10 @@ from sklearn.model_selection import GridSearchCV
 import tensorflow.python.util.deprecation as deprecation
 deprecation._PRINT_DEPRECATION_WARNINGS = False
 
-X, y = fs.retrieveSolarData()
-# X, y = fs.retrieveWindData()
+################################################################################################
+# X, y = fs.retrieveSolarData()
+X, y = fs.retrieveWindData()
 # X, y = fs.retrieveDemandData()
-
-# print('X.shape:', X.shape)
-# print('y.shape:', y.shape)
-# print('X:\n', X)
-# print('y:\n', y)
-
-
-### check for nans present
-# k = 0
-# for i in X.flatten(): 
-#     if math.isnan(i): print('error in X at position ', k)
-#     k+=1
-# k = 0
-# for i in y: 
-#     if math.isnan(i): print('error in y at position ', k)
-#     k+=1
 
 # splitting data in test and training sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.3, random_state=42)
@@ -61,15 +46,9 @@ X = imp.fit_transform(X)
 X_train = imp.fit_transform(X_train)
 X_test = imp.fit_transform(X_test)
 
-### check for nans present
-k = 0
-for i in y: 
-    if math.isnan(i): print('error in X at position ', k)
-    k+=1
-
 # defining certain variables
 verbose = 0         # 0 to show nothing; 1 or 2 to show the progress
-n_splits = 10
+n_splits = 5
 
 # from https://machinelearningmastery.com/regression-tutorial-keras-deep-learning-library-python/
 
@@ -111,18 +90,20 @@ def demandBaselineModel():
     model.compile(loss='mean_squared_error', optimizer='adam')
     return model
 
+################################################################################################
 ### solar
-batch_size = 200
-epochs = 500
-### wind
 # batch_size = 200
-# epochs = 200
+# epochs = 500
+### wind
+batch_size = 200
+epochs = 200
 ### demand
 # batch_size = 500
 # epochs = 1000
 
-model = KerasRegressor(build_fn=solarBaselineModel, epochs=epochs, batch_size=batch_size, verbose=verbose)
-# model = KerasRegressor(build_fn=windBaselineModel, epochs=epochs, batch_size=batch_size, verbose=verbose)
+################################################################################################
+# model = KerasRegressor(build_fn=solarBaselineModel, epochs=epochs, batch_size=batch_size, verbose=verbose)
+model = KerasRegressor(build_fn=windBaselineModel, epochs=epochs, batch_size=batch_size, verbose=verbose)
 # model = KerasRegressor(build_fn=demandBaselineModel, epochs=epochs, batch_size=batch_size, verbose=verbose)
 
 
@@ -163,13 +144,26 @@ pipeline = Pipeline(estimators)
 # model.model.save('weatherForecasting/savedModel')
 
 
+################################################################################################
 ### save the prediction
-# MSE = fs.trainWithoutCurve(X_train, y_train, model)
-# y_pred = model.predict(X)
-# np.save('predictedDemand_V1', y_pred)
+MSE = fs.trainWithoutCurve(X, y, model)
+y_pred = model.predict(X)
+# np.save('dataFilesForControl/realSolar', y)
+# np.save('dataFilesForControl/predSolar', y_pred)
+# np.save('dataFilesForControl/realWind', y)
+# np.save('dataFilesForControl/predWind', y_pred)
+# np.save('dataFilesForControl/realDemand', y)
+# np.save('dataFilesForControl/predDemand', y_pred)
+
+fs.printTrainingResults(X, epochs, batch_size, n_splits, windBaselineModel, MSE)
 
 
+# print('mean:', np.mean(y))
+# print('max:', np.max(y))
 
 
 # print the runtime
 print('\nRuntime was', (dt.datetime.now() - start_time).total_seconds(), 'seconds')
+
+from playsound import playsound
+playsound('C:/Users/piete/OneDrive/Documents/My Education/06 BAP/Code/sound.wav')
