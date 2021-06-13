@@ -48,20 +48,26 @@ y_w = meanWindPower/np.mean(y_w)*y_w # [Wh/hour] # scale the data
 
 ### adding the previous hour
 dataForControl = np.load('dataForControl.npz')
+# realSolar =     dataForControl['realSolar']
+# realWind =      dataForControl['realWind']
+# predWind =      dataForControl['predWind']
+# realDemand =    dataForControl['realDemand']
 predSolar =     dataForControl['predSolar']
 predWind =      np.load('y_pred_w.npy')
 predDemand =    dataForControl['predDemand']
 
-currentUsageSolar = predSolar[0]
-newFeature = np.delete(np.insert(predSolar,0,currentUsageSolar),-1)[:,np.newaxis]
+# newFeature = np.delete(np.insert(y_s,0,y_s[0]),-1)[:,np.newaxis]
+# X_s = np.append(X_s, newFeature, axis=1)
+# newFeature = np.delete(np.insert(y_w,0,y_w[0]),-1)[:,np.newaxis]
+# X_w = np.append(X_w, newFeature, axis=1)
+# newFeature = np.delete(np.insert(y_d,0,y_d[0]),-1)[:,np.newaxis]
+# X_d = np.append(X_d, newFeature, axis=1)
+
+newFeature = np.delete(np.insert(predSolar,0,predSolar[0]),-1)[:,np.newaxis]
 X_s = np.append(X_s, newFeature, axis=1)
-
-currentUsageWind = predWind[0]
-newFeature = np.delete(np.insert(predWind,0,currentUsageWind),-1)[:,np.newaxis]
+newFeature = np.delete(np.insert(predWind,0,predWind[0]),-1)[:,np.newaxis]
 X_w = np.append(X_w, newFeature, axis=1)
-
-currentUsageDemand = predDemand[0]
-newFeature = np.delete(np.insert(predDemand,0,currentUsageDemand),-1)[:,np.newaxis]
+newFeature = np.delete(np.insert(predDemand,0,predDemand[0]),-1)[:,np.newaxis]
 X_d = np.append(X_d, newFeature, axis=1)
 
 
@@ -107,8 +113,8 @@ def solarBaselineModel():
 def windBaselineModel():
     # create model
     model = Sequential()
-    model.add(Dense(20, input_dim=23, kernel_initializer='normal', activation='relu'))
-    model.add(Dense(5, kernel_initializer='normal', activation='relu'))
+    model.add(Dense(10, input_dim=23, kernel_initializer='normal', activation='relu'))
+    model.add(Dense(15, kernel_initializer='normal', activation='relu'))
     model.add(Dense(25, kernel_initializer='normal', activation='relu'))
     model.add(Dense(1, kernel_initializer='normal'))
     # Compile model
@@ -155,6 +161,13 @@ MSE_d = fs.trainWithoutCurve(X_train_d, y_train_d, X_test_d, y_test_d, demandMod
 y_pred_d = demandModel.predict(X_d)
 
 
+
+
+print('######################################################################')
+print('########################### WITH PREV HOUR ###########################')
+print('######################################################################')
+print('\n')
+
 print('\n############################## SOLAR ##############################\n')
 fs.printTrainingResults(X_s, epochs_s, batch_size_s, n_splits, solarBaselineModel, MSE_s)
 print('Mean Error as fraction of Maximum:', abs(MSE_s)**0.5/np.max(y_s))
@@ -179,13 +192,13 @@ realWind = realWind[105194-2:113953+1-2]
 predWind = predWind[105194-2:113953+1-2]
 
 ### saving
-np.savez('dataForControl_with-previous-hour',
-realSolar = realSolar,
-predSolar = predSolar,
-realWind = realWind,
-predWind = predWind,
-realDemand = realDemand,
-predDemand = predDemand)
+# np.savez('dataForControl_with-previous-hour',
+# realSolar = realSolar,
+# predSolar = predSolar,
+# realWind = realWind,
+# predWind = predWind,
+# realDemand = realDemand,
+# predDemand = predDemand)
 
 print('\n\n############################# TOTALS #############################\n')
 print('total generated in a year by realSolar:', np.sum(realSolar)/1000000, 'MWh')

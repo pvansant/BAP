@@ -67,7 +67,7 @@ X_train_d = imp.fit_transform(X_train_d)
 X_test_d = imp.fit_transform(X_test_d)
 
 # defining certain variables
-verbose = 2         # 0 to show nothing; 1 (much) or 2 (little) to show the progress
+verbose = 0         # 0 to show nothing; 1 (much) or 2 (little) to show the progress
 n_splits = 5
 
 # from https://machinelearningmastery.com/regression-tutorial-keras-deep-learning-library-python/
@@ -88,8 +88,8 @@ def solarBaselineModel():
 def windBaselineModel():
     # create model
     model = Sequential()
-    model.add(Dense(20, input_dim=22, kernel_initializer='normal', activation='relu'))
-    model.add(Dense(5, kernel_initializer='normal', activation='relu'))
+    model.add(Dense(10, input_dim=22, kernel_initializer='normal', activation='relu'))
+    model.add(Dense(15, kernel_initializer='normal', activation='relu'))
     model.add(Dense(25, kernel_initializer='normal', activation='relu'))
     model.add(Dense(1, kernel_initializer='normal'))
     # Compile model
@@ -126,8 +126,8 @@ demandModel = KerasRegressor(build_fn=demandBaselineModel, epochs=epochs_d, batc
 
 
 ### save the prediction
-# MSE_s = fs.trainWithoutCurve(X_train_s, y_train_s, X_test_s, y_test_s, solarModel)
-# y_pred_s = solarModel.predict(X_s)
+MSE_s = fs.trainWithoutCurve(X_train_s, y_train_s, X_test_s, y_test_s, solarModel)
+y_pred_s = solarModel.predict(X_s)
 
 MSE_w = fs.trainWithoutCurve(X_train_w, y_train_w, X_test_w, y_test_w, windModel)
 y_pred_w = windModel.predict(X_w)
