@@ -67,7 +67,7 @@ X_train_d = imp.fit_transform(X_train_d)
 X_test_d = imp.fit_transform(X_test_d)
 
 # defining certain variables
-verbose = 0         # 0 to show nothing; 1 (much) or 2 (little) to show the progress
+verbose = 2         # 0 to show nothing; 1 (much) or 2 (little) to show the progress
 n_splits = 5
 
 # from https://machinelearningmastery.com/regression-tutorial-keras-deep-learning-library-python/
@@ -126,11 +126,13 @@ demandModel = KerasRegressor(build_fn=demandBaselineModel, epochs=epochs_d, batc
 
 
 ### save the prediction
-MSE_s = fs.trainWithoutCurve(X_train_s, y_train_s, X_test_s, y_test_s, solarModel)
-y_pred_s = solarModel.predict(X_s)
+# MSE_s = fs.trainWithoutCurve(X_train_s, y_train_s, X_test_s, y_test_s, solarModel)
+# y_pred_s = solarModel.predict(X_s)
 
 MSE_w = fs.trainWithoutCurve(X_train_w, y_train_w, X_test_w, y_test_w, windModel)
 y_pred_w = windModel.predict(X_w)
+
+# np.save('y_pred_w',y_pred_w)
 
 MSE_d = fs.trainWithoutCurve(X_train_d, y_train_d, X_test_d, y_test_d, demandModel)
 y_pred_d = demandModel.predict(X_d)
@@ -160,13 +162,13 @@ realWind = realWind[105194-2:113953+1-2]
 predWind = predWind[105194-2:113953+1-2]
 
 ### saving
-np.savez('dataForControl',
-realSolar = realSolar,
-predSolar = predSolar,
-realWind = realWind,
-predWind = predWind,
-realDemand = realDemand,
-predDemand = predDemand)
+# np.savez('dataForControl',
+# realSolar = realSolar,
+# predSolar = predSolar,
+# realWind = realWind,
+# predWind = predWind,
+# realDemand = realDemand,
+# predDemand = predDemand)
 
 print('\n\n############################# TOTALS #############################\n')
 print('total generated in a year by realSolar:', np.sum(realSolar)/1000000, 'MWh')

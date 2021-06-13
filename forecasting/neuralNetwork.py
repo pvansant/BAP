@@ -32,7 +32,7 @@ import tensorflow.python.util.deprecation as deprecation
 deprecation._PRINT_DEPRECATION_WARNINGS = False
 
 ################################################################################################
-X, y = fs.retrieveSolarData()
+# X, y = fs.retrieveSolarData()
 # X, y = fs.retrieveWindData()
 # X, y = fs.retrieveDemandData()
 
@@ -48,7 +48,7 @@ X_test = imp.fit_transform(X_test)
 
 # defining certain variables
 verbose = 2         # 0 to show nothing; 1 (much) or 2 (little) to show the progress
-n_splits = 5
+n_splits = 10
 
 # from https://machinelearningmastery.com/regression-tutorial-keras-deep-learning-library-python/
 
@@ -92,19 +92,19 @@ def demandBaselineModel():
 
 ################################################################################################
 ### solar
-batch_size = 200
-epochs = 500
+# batch_size = 200
+# epochs = 500
 ### wind
 # batch_size = 200
 # epochs = 200
 ### demand
-# batch_size = 500
-# epochs = 1000
+batch_size = 500
+epochs = 1000
 
 ################################################################################################
-model = KerasRegressor(build_fn=solarBaselineModel, epochs=epochs, batch_size=batch_size, verbose=verbose)
+# model = KerasRegressor(build_fn=solarBaselineModel, epochs=epochs, batch_size=batch_size, verbose=verbose)
 # model = KerasRegressor(build_fn=windBaselineModel, epochs=epochs, batch_size=batch_size, verbose=verbose)
-# model = KerasRegressor(build_fn=demandBaselineModel, epochs=epochs, batch_size=batch_size, verbose=verbose)
+model = KerasRegressor(build_fn=demandBaselineModel, epochs=epochs, batch_size=batch_size, verbose=verbose)
 
 
 # evaluate model with standardized dataset
@@ -117,19 +117,20 @@ pipeline = Pipeline(estimators)
 # model = keras.models.load_model('weatherForecasting/anotherTest')
 
 ### make a single model and evaluate it with the test set
-# MSE = fs.trainWithoutCurve(X_train, y_train, model)
+MSE = fs.trainWithoutCurve(X_train, y_train, X_test, y_test, model)
 
 # y_pred = model.predict(X_test)
 # testMSE = mean_squared_error(y_test, y_pred)
 # testRootMSE = MSE**0.5
-# print('test rmse',testRootMSE)
+print('test mse:',MSE)
+print('test rmse:',MSE**0.5)
 # print('test relative rmse',testRootMSE/30800)
 
 ### make multiple models using cross_val_score and evaluate it using validation sets from the training set
-# MSE, STD = fs.performCrossValidation(X_train, y_train, n_splits, pipeline)
+# MSE, STD = fs.performCrossValidation(X, y, n_splits, pipeline)
 
 ### print the results
-# fs.printTrainingResults(X_train, epochs, batch_size, n_splits, solarBaselineModel, MSE)
+# fs.printTrainingResults(X, epochs, batch_size, n_splits, demandBaselineModel, MSE)
 # print('for demand; relative root mse:',MSE**0.5/30800)
 
 ### make a single model (without the pipeline) and show the learning curve
@@ -140,18 +141,18 @@ pipeline = Pipeline(estimators)
 
 
 ################################################################################################
-### save the prediction
-MSE = fs.trainWithoutCurve(X_train, y_train, X_test, y_test, model)
-y_pred = model.predict(X)
+# ### save the prediction
+# MSE = fs.trainWithoutCurve(X_train, y_train, X_test, y_test, model)
+# y_pred = model.predict(X)
 # np.save('unscaledData/realSolar', y)
 # np.save('unscaledData/predSolar', y_pred)
-np.save('unscaledData/realWind', y)
-np.save('unscaledData/predWind', y_pred)
+# np.save('unscaledData/realWind', y)
+# np.save('unscaledData/predWind', y_pred)
 # np.save('unscaledData/realDemand', y)
 # np.save('unscaledData/predDemand', y_pred)
 
 ################################################################################################
-fs.printTrainingResults(X, epochs, batch_size, n_splits, solarBaselineModel, MSE)
+# fs.printTrainingResults(X, epochs, batch_size, n_splits, solarBaselineModel, MSE)
 # fs.printTrainingResults(X, epochs, batch_size, n_splits, windBaselineModel, MSE)
 # fs.printTrainingResults(X, epochs, batch_size, n_splits, demandBaselineModel, MSE)
 
