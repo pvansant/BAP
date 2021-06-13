@@ -35,13 +35,19 @@ import matplotlib.pyplot as plt
 # wind = data1['windOutput']
 # demand = data1['demandOutput']
 
-dataForControl = np.load('dataForControl_with-previous-hour.npz')
-realSolar =     dataForControl['realSolar']
-predSolar =     dataForControl['predSolar']
-realWind =      dataForControl['realWind']
-predWind =      dataForControl['predWind']
-realDemand =    dataForControl['realDemand']
-predDemand =    dataForControl['predDemand']
+data = np.load('dataForControl_with-previous-hour.npz')
+# data = np.load('dataForFigure.npz')
+
+realSolar =     data['realSolar']
+predSolar =     data['predSolar']
+realWind =      data['realWind']
+predWind =      data['predWind']
+realDemand =    data['realDemand']
+predDemand =    data['predDemand']
+
+# print(predSolar)
+
+# print(predDemand)
 
 plt.subplot(3,1,1)
 plt.plot(realSolar, c = 'black', ls = '-') # plot the set point

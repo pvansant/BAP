@@ -71,6 +71,38 @@ newFeature = np.delete(np.insert(predDemand,0,predDemand[0]),-1)[:,np.newaxis]
 X_d = np.append(X_d, newFeature, axis=1)
 
 
+# X_s_week = X_s[:7*24,:]
+# X_w_week = X_w[105194-2:105194-2+7*24,:]
+# X_d_week = X_d[:7*24,:]
+# y_s_week = y_s[:7*24]
+# y_w_week = y_w[105194-2:105194-2+7*24]
+# y_d_week = y_d[:7*24]
+
+# 3865:4060
+
+X_s_week = X_s[3865:4060,:]
+X_w_week = X_w[105194-2+3865:105194-2+4060,:]
+X_d_week = X_d[3865:4060,:]
+y_s_week = y_s[3865:4060]
+y_w_week = y_w[105194-2+3865:105194-2+4060]
+y_d_week = y_d[3865:4060]
+
+X_s = np.delete(X_s, np.s_[3865:4060], 0)
+X_w = np.delete(X_w, np.s_[105194-2+3865:105194-2+4060], 0)
+X_d = np.delete(X_d, np.s_[3865:4060], 0)
+y_s = np.delete(y_s, np.s_[3865:4060], 0)
+y_w = np.delete(y_w, np.s_[105194-2+3865:105194-2+4060], 0)
+y_d = np.delete(y_d, np.s_[3865:4060], 0)
+
+# X_s = X_s[7*24:,:]
+# X_w = X_w[:105194-2,:]
+# X_d = X_d[7*24:,:]
+# y_s = y_s[7*24:]
+# y_w = y_w[:105194-2]
+# y_d = y_d[7*24:]
+
+
+
 # splitting data in test and training sets
 X_train_s, X_test_s, y_train_s, y_test_s = train_test_split(X_s, y_s, test_size=.3, random_state=42)
 X_train_w, X_test_w, y_train_w, y_test_w = train_test_split(X_w, y_w, test_size=.3, random_state=42)
@@ -90,6 +122,10 @@ X_test_w = imp.fit_transform(X_test_w)
 X_d = imp.fit_transform(X_d)
 X_train_d = imp.fit_transform(X_train_d)
 X_test_d = imp.fit_transform(X_test_d)
+
+X_s_week = imp.fit_transform(X_s_week)
+X_w_week = imp.fit_transform(X_w_week)
+X_d_week = imp.fit_transform(X_d_week)
 
 # defining certain variables
 verbose = 0         # 0 to show nothing; 1 (much) or 2 (little) to show the progress
@@ -160,6 +196,12 @@ y_pred_w = windModel.predict(X_w)
 MSE_d = fs.trainWithoutCurve(X_train_d, y_train_d, X_test_d, y_test_d, demandModel)
 y_pred_d = demandModel.predict(X_d)
 
+# print(X_s_week)
+y_pred_s_week = solarModel.predict(X_s_week)
+print(y_pred_s_week)
+y_pred_w_week = windModel.predict(X_w_week)
+print(y_pred_w_week)
+y_pred_d_week = demandModel.predict(X_d_week)
 
 
 
@@ -181,15 +223,15 @@ fs.printTrainingResults(X_d, epochs_d, batch_size_d, n_splits, demandBaselineMod
 print('Mean Error as fraction of Maximum:', abs(MSE_d)**0.5/np.max(y_d))
 
 ### mapping
-realSolar = y_s
-predSolar = y_pred_s
-realWind = y_w
-predWind = y_pred_w
-realDemand = y_d
-predDemand = y_pred_d
+# realSolar = y_s
+# predSolar = y_pred_s
+# realWind = y_w
+# predWind = y_pred_w
+# realDemand = y_d
+# predDemand = y_pred_d
 
-realWind = realWind[105194-2:113953+1-2]
-predWind = predWind[105194-2:113953+1-2]
+# realWind = realWind[105194-2:113953+1-2]
+# predWind = predWind[105194-2:113953+1-2]
 
 ### saving
 # np.savez('dataForControl_with-previous-hour',
@@ -200,13 +242,21 @@ predWind = predWind[105194-2:113953+1-2]
 # realDemand = realDemand,
 # predDemand = predDemand)
 
-print('\n\n############################# TOTALS #############################\n')
-print('total generated in a year by realSolar:', np.sum(realSolar)/1000000, 'MWh')
-print('total generated in a year by predSolar:', np.sum(predSolar)/1000000, 'MWh')
-print('total generated in a year by realWind:', np.sum(realWind)/1000000, 'MWh')
-print('total generated in a year by predWind:', np.sum(predWind)/1000000, 'MWh')
-print('total generated in a year by realDemand:', np.sum(realDemand)/1000000, 'MWh')
-print('total generated in a year by predDemand:', np.sum(predDemand)/1000000, 'MWh')
+np.savez('dataForFigure',
+realSolar   = y_s_week,
+predSolar   = y_pred_s_week,
+realWind    = y_w_week,
+predWind    = y_pred_w_week,
+realDemand  = y_d_week,
+predDemand  = y_pred_d_week)
+
+# print('\n\n############################# TOTALS #############################\n')
+# print('total generated in a year by realSolar:', np.sum(realSolar)/1000000, 'MWh')
+# print('total generated in a year by predSolar:', np.sum(predSolar)/1000000, 'MWh')
+# print('total generated in a year by realWind:', np.sum(realWind)/1000000, 'MWh')
+# print('total generated in a year by predWind:', np.sum(predWind)/1000000, 'MWh')
+# print('total generated in a year by realDemand:', np.sum(realDemand)/1000000, 'MWh')
+# print('total generated in a year by predDemand:', np.sum(predDemand)/1000000, 'MWh')
 
 # print the runtime
 print('\nRuntime was', (dt.datetime.now() - start_time).total_seconds(), 'seconds')
