@@ -23,16 +23,15 @@ from measurements import determineControlSoC
 from optimizationSetup import modelPredictiveControl
 
 # load predictions 
-data = np.load('data_V2.npz')
-predSun = data['predSun']
-predWind = data['predWind']
-predDemand = data['predDemand']
+dataForControl = np.load('dataForControl.npz')
+predSun = dataForControl['predSolar']
+predWind = dataForControl['predWind']
+predDemand = dataForControl['predDemand']
 
 # load actual data
-data1 = np.load('data_original_V3.npz')
-sun = predSun
-wind = data1['windOutput']
-demand = data1['demandOutput']
+sun = dataForControl['realSolar']
+wind = dataForControl['realWind']
+demand = dataForControl['realDemand']
 
 # Setup input data for the initialization of the model
 # Initialize the time array, this represents all hours in the upcoming week.
@@ -107,22 +106,22 @@ gridPowerTakeRawPlot = [0]
 
 #loop
 # optimize for the coming week every hour
-for t in range(1,8760-(len(time)+1)):
+for t in range(1,500):
     #update control level  
     controlLevelIni = mpc.controlLevel[1].value
 
     # Retrieve the measurements when using the controller
     prevControl = determineControlSoC(t-1, mpc.controlLevel[0].value)
     if (SoCPlot[-1] + readMeasurement(t,sun,wind,demand) + prevControl > 100):
-        SoCIni = 100
+        mpc.SoCIni.value= SoCIni = 100
         gridPowerGive = abs(SoCPlot[-1] + readMeasurement(t,sun,wind,demand) + prevControl - 100)
         gridPowerTake = 0
     elif (SoCPlot[-1] + readMeasurement(t,sun,wind,demand) + prevControl < 10):
-        SoCIni = 10
+        mpc.SoCIni.value= SoCIni = 10
         gridPowerGive = 0
         gridPowerTake = abs(10 - (SoCPlot[-1] + readMeasurement(t,sun,wind,demand) + prevControl))
     else:
-        SoCIni = SoCPlot[-1] + readMeasurement(t,sun,wind,demand) + prevControl
+        mpc.SoCIni.value= SoCIni = SoCPlot[-1] + readMeasurement(t,sun,wind,demand) + prevControl
         gridPowerGive = 0
         gridPowerTake = 0
 
@@ -142,10 +141,11 @@ for t in range(1,8760-(len(time)+1)):
 
     # Make predictions using the ANN for demand and generation and prep for the model
     SoCDiff_ini = readPredictions(t,len(time),predSun,predWind,predDemand)
-    SoCDiff = {time[i]: SoCDiff_ini[i] for i in range(len(time))}    
-
+    mpc.SoCDiff[i].value = [SoCDiff_ini[i] for i in range(len(time))] 
+    #SoCDiff = {time[i]: SoCDiff_ini[i] for i in range(len(time))}   
+    mpc.controlLevelIni.value = controlLevelIni
     # Solve the pyomo optimizer model
-    mpc = modelPredictiveControl(time,SoCIni,SoCDiff,setPoint,weight,dCost,cCost,dMax,controlLevelIni)
+    # mpc = modelPredictiveControl(time,SoCIni,SoCDiff,setPoint,weight,dCost,cCost,dMax,controlLevelIni)
     solver.solve(mpc, tee = False)
 
     # update plot values for both with and without controller
@@ -160,7 +160,7 @@ for t in range(1,8760-(len(time)+1)):
     gridPowerTakeRawPlot.append(gridPowerTakeRaw)
 
     # print confirmation every 25 cycles
-    if t%25 == 0:
+    if t%10 == 0:
         print('cycle: ', t , ' is done')
     
     # loop back and repeat for the next hours

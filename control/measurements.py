@@ -17,7 +17,7 @@ output: SoCChange - predicted change in SoC of the battery due to the predicted 
 '''
 def readPredictions(index,length,sun,wind,demand):
     SoCChange = [] # initiate list
-    length = length +index 
+    length = length +index
     for i in range(index,length):
         SoCChange.append((sun[i] + wind[i] - demand[i])/772.0) # read the predictions for every hour and scale Wh to SoC
     return SoCChange # return Change in SoC

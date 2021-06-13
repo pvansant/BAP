@@ -34,7 +34,7 @@ def modelPredictiveControl(time,SoCIni,SoCDiff,setPoint,weight,dCost,cCost,dMax,
     mpc.time = Set(initialize= time) # Define the time steps from 0 to 168 hours
    
     # Define Parameters   
-    mpc.SoCDiff = Param(mpc.time, initialize=SoCDiff, mutable=True)
+    mpc.SoCDiff = Param(mpc.time, initialize=SoCDiff, mutable=True, within = Any)
     mpc.setPoint = Param(mpc.time, initialize=setPoint, mutable=True)
     mpc.weight = Param(mpc.time, initialize=weight, mutable=True)
     mpc.dCost = Param(mpc.time, initialize=dCost, mutable=True )
