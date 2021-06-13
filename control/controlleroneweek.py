@@ -23,16 +23,15 @@ from measurements import determineControlSoC
 from optimizationSetup import modelPredictiveControl
 
 # load predictions 
-data = np.load('data_V2.npz')
-predSun = data['predSun']
-predWind = data['predWind']
-predDemand = data['predDemand']
+dataForControl = np.load('dataForControl.npz')
+predSun = dataForControl['predSolar']
+predWind = dataForControl['predWind']
+predDemand = dataForControl['predDemand']
 
 # load actual data
-data1 = np.load('data_original_V1.npz')
-Sun = data1['sunOutput']
-Wind = data1['windOutput']
-Demand = data1['demandOutput']
+Sun = dataForControl['realSolar']
+Wind = dataForControl['realWind']
+Demand = dataForControl['realDemand']
 
 # Setup input data for the initialization of the model
 # Initialize the time array, this represents all hours in the upcoming week.
@@ -45,7 +44,7 @@ for i in range(169):
 # This will initialize the indexed Parameters for the Pyomo model
 
 # Initialize the difference in state of charge due to the predicted demand and generation
-SoCDiff_ini = readPredictions(5000,len(time),predSun,predWind,predDemand) # one week
+SoCDiff_ini = readPredictions(0,len(time),predSun,predWind,predDemand) # one week
 SoCDiff = {time[i]: SoCDiff_ini[i] for i in range(len(time))} # Make it a Dictionary
 
 # Initialize the setpoint the controller tries to reach, this will determine the objective in the Pyomo model
@@ -63,13 +62,13 @@ weight = {time[i]: weight_ini[i] for i in range(len(time))}# Make it a Dictionar
 # Initialize the weight for the change in control signal, is used by the objective
 dCost_ini = []
 for i in range(len(time)):
-    dCost_ini.append(0.1*weight_ini[i])# The weight decreases linearly over time
+    dCost_ini.append(5*weight_ini[i])# The weight decreases linearly over time
 dCost = {time[i]: dCost_ini[i] for i in range(len(time))}# Make it a Dictionary
 
 # Initialize the weight for the deviation of the control signal from zero, is used by the objective
 cCost_ini = []
 for i in range(len(time)):
-    cCost_ini.append(0.1*weight_ini[i])# The weight decreases linearly over time
+    cCost_ini.append(2*weight_ini[i])# The weight decreases linearly over time
 cCost = {time[i]: cCost_ini[i] for i in range(len(time))}# Make it a Dictionary
 
 
@@ -100,31 +99,30 @@ for i in range(len(time)-1):
     SoCRaw.append(SoCRaw[i] + SoCDiff_ini[i])
 
 # plot the SoC over time
-plt.subplot(3,1,1)
+plt.subplot(2,1,1)
 plt.plot(time,tempSoC, c = '#0C7CBA', ls = '-') # plot the SOC
 plt.plot(time,setPoint_ini, c = 'black', ls = '--') # plot the set point
 plt.plot(time,SoCRaw, c = 'black', ls = '-') # plot the SoC without the controller
 plt.xlabel("Time [hours]")
 plt.ylabel("State of Charge [%]")
 plt.title("State of charge of the battery over one time horizon")
-
+plt.subplots_adjust(wspace=0.05, hspace=.5)
 # plot the optimized control level over the time horizon
 tempControlLevel = (mpc.controlLevel[i].value for i in time)
 tempControlLevel = list(tempControlLevel)
-plt.subplot(3,1,2)
+plt.subplot(2,1,2)
 plt.plot(time,tempControlLevel, marker ='o', c = '#0C7CBA', ls ='')
 plt.xlabel("Time [hours]")
 plt.ylabel("control level")
 plt.title("Control level over one time horizon")
 # plot the difference when using the controller or not using the controller
-SoCDiffRaw = []
-for i in range(len(time)):
-    SoCDiffRaw.append(tempSoC[i] - SoCRaw[i])
-plt.subplot(3,1,3)
-plt.plot(time,SoCDiffRaw, c = '#0C7CBA', ls ='-')
-plt.xlabel("Time [hours]")
-plt.ylabel("\u0394SoC [%]")
-plt.title("Difference in SoC due to the controller action")
+#SoCDiffRaw = []
+#for i in range(len(time)):
+#    SoCDiffRaw.append(tempSoC[i] - SoCRaw[i])
+#plt.subplot(3,1,3)
+#plt.plot(time,SoCDiffRaw, c = '#0C7CBA', ls ='-')
+#plt.xlabel("Time [hours]")
+#plt.title("Difference in SoC due to the controller action")
 
 # print the runtime
 print('\nRuntime was', (dt.datetime.now() - start_time).total_seconds(), 'seconds')
