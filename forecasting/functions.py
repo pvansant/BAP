@@ -67,7 +67,7 @@ def retrieveWindData():
 
 
 def retrieveSolarData():
-    y = np.load('processedSolarData_V3.npy')
+    y = np.load('numpyDataFiles/processedSolarData.npy')
 
     try:
         data = np.genfromtxt('forecasting/generationData/2019uurgeg_344_2011-2020.txt', 
@@ -129,7 +129,7 @@ def retrieveDemandData():
     # scaling the output data
     y_days = y.reshape(-1,24).sum(1) # create /day data
     mean_of_one_day_liander = np.mean(y_days) # calc mean of one day
-    mean_of_one_day_tunect = 57241 # mean of 1 day at tunect (from DCG)
+    mean_of_one_day_tunect = 41000 # mean of 1 day at tunect (from DCG)
     scalingFactor = mean_of_one_day_tunect/mean_of_one_day_liander
     y = scalingFactor*y # scaling the data
 
@@ -137,10 +137,10 @@ def retrieveDemandData():
 
 
 ### make a single model and evaluate it with the test set
-def trainWithoutCurve(X_train, y_train, pipeline):
+def trainWithoutCurve(X_train, y_train, X_test, y_test, pipeline):
     pipeline.fit(X_train,y_train)
-    y_pred = pipeline.predict(X_train)
-    MSE = mean_squared_error(y_train, y_pred)
+    y_pred = pipeline.predict(X_test)
+    MSE = mean_squared_error(y_test, y_pred)
     return MSE
 
 
@@ -171,14 +171,14 @@ def performCrossValidation(X_train, y_train, n_splits, pipeline):
 
 ### print the results
 def printTrainingResults(X_train, epochs, batch_size, n_splits, baseline_model, MSE):
-    print('\n\n')
+    # print('\n\n')
     baseline_model().summary() # enable to print a summary of the NN model
     
     print('\nParameters:')
     print('\tepochs:\t\t', epochs)
     print('\tbatch_size:\t', batch_size)
-    print('\tn_splits:\t', n_splits)
-    print('\tX_train shape:\t', X_train.shape)
+    # print('\tn_splits:\t', n_splits)
+    print('\tinput shape:\t', X_train.shape)
     
     print('\nMSE becomes: {:.4f}'.format(abs(MSE)))
     print('Root MSE becomes: {:.4f}'.format(abs(MSE)**0.5))

@@ -77,7 +77,7 @@ for i in y:
 # defining certain variables
 epochs = 1000
 batch_size = 500
-verbose = 0         # 0 to show nothing; 1 or 2 to show the progress
+verbose = 2         # 0 to show nothing; 1 or 2 to show the progress
 n_splits = 2
 
 # from https://machinelearningmastery.com/regression-tutorial-keras-deep-learning-library-python/
@@ -131,11 +131,16 @@ model = KerasRegressor(build_fn=demandBaselineModel, epochs=epochs, batch_size=b
 # define the grid search parameters
 # batch_size = [200, 500, 1000]
 # epochs = [10, 25, 50, 100, 200, 500, 1000, 2000]
-neurons1 = [150, 300]
-neurons2 = [100, 200]
-neurons3 = [50, 100]
-neurons4 = [25, 50]
+neurons1 = [150]
+neurons2 = [200]
+neurons3 = [50]
+neurons4 = [25]
 neurons5 = [10, 20]
+# neurons1 = [150, 300]
+# neurons2 = [100, 200]
+# neurons3 = [50, 100]
+# neurons4 = [25, 50]
+# neurons5 = [10, 20]
 
 # neurons1 = [15, 20, 25]
 # neurons2 = [10, 15, 20, 25, 30]
