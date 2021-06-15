@@ -17,7 +17,7 @@ output: SoCChange - predicted change in SoC of the battery due to the predicted 
 '''
 def readPredictions(index,length,sun,wind,demand):
     SoCChange = [] # initiate list
-    length = length +index 
+    length = length +index
     for i in range(index,length):
         SoCChange.append((sun[i] + wind[i] - demand[i])/772.0) # read the predictions for every hour and scale Wh to SoC
     return SoCChange # return Change in SoC
@@ -40,25 +40,24 @@ inputs: index - current hour
 controlLevel - current control level
 output: SoCChange - actual change in SoC of the battery due to the control level
 '''
-def determineControlSoC(index, controlLevel):
+def determineControlSoC(index, controlLevel): # TODO switch the first two
     ControlSoC = 0 # intialize the change in SoC as zero 
     hour = index%24 # calculate which hour of the day it is
     if controlLevel > 0: # control level 1 or higher
-        if hour == 20 or hour == 21 or hour == 4 or hour == 5:
-            ControlSoC += 60 # use lighting at 50% during these hours
-        elif hour > 21 or hour < 4:
-            ControlSoC += 120 # dont use lighting during these hours
-        else:
-            ControlSoC += 0 # no savings during the day
-        
-        if controlLevel > 1: # control level 2 or higher
-            if hour > 5 and hour < 21: 
-                for i in range(12): # calculate at random who is not home
-                    temp = rnd.randint(1,1000)
-                    if temp < 408:
-                        ControlSoC += 70 # when not home boiler is turned off
+        if hour > 5 and hour < 21: 
+            for i in range(12): # calculate at random who is not home
+                temp = rnd.randint(1,1000)
+            if temp < 408:
+                ControlSoC += 70 # when not home boiler is turned off
             else:
                 ControlSoC += 0
+        if controlLevel > 1: # control level 2 or higher
+            if hour == 20 or hour == 21 or hour == 4 or hour == 5:
+                ControlSoC += 60 # use lighting at 50% during these hours
+            elif hour > 21 or hour < 4:
+                ControlSoC += 120 # dont use lighting during these hours
+            else:
+                ControlSoC += 0 # no savings during the day
             if controlLevel > 2:# control level 3 or higher
                 if hour > 5 and hour < 22:
                     for i in range(12): # calculate at random who is using the wachingmachine
