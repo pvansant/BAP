@@ -1,4 +1,8 @@
-# Authors: Aart Rozendaal and Pieter Van Santvliet
+'''
+Authors: Aart Rozendaal and Pieter Van Santvliet
+Description: Different functions are defined that are used to retrieve/process/evaluate data.
+'''
+
 
 import datetime as dt
 import matplotlib.pyplot as plt
@@ -16,25 +20,15 @@ from sklearn.preprocessing import StandardScaler
 from tensorflow import keras
 
 
+# print the shapes of the train and test sets
 def printSets(X_train, X_test, y_train, y_test):
-    '''
-    Print the shapes of the train and test sets.
-
-    Parameters
-    ----------
-    X_train, X_test, y_train, y_test : numpy arrays
-        The sets that are to be printed.
-
-    Output
-    ------
-    For every set, the shape is printed.
-    '''
     print("shape of X_train: {}".format(X_train.shape))
     print("shape of X_test: {}".format(X_test.shape))
     print("shape of y_train: {}".format(y_train.shape))
     print("shape of y_test: {}".format(y_test.shape))
 
 
+# retrieve the weather data from the data file
 def retrieveWeatherData():
     # extracting input data from txt file
     try:
@@ -46,6 +40,7 @@ def retrieveWeatherData():
     return data
 
 
+# retrieve the wind data from the data file
 def retrieveWindData():
     # extracting wind data from csv file
     try:
@@ -66,6 +61,7 @@ def retrieveWindData():
     return X, y
 
 
+# retrieve the solar data from the data file
 def retrieveSolarData():
     y = np.load('numpyDataFiles/processedSolarData.npy')
 
@@ -79,6 +75,7 @@ def retrieveSolarData():
     return X, y
 
 
+# retrieve the demand data from the data file; it is also already processed
 def retrieveDemandData():
     # extracting input data from txt file
     try:

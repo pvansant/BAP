@@ -1,6 +1,6 @@
 '''
 Authors: Aart Rozendaal and Pieter Van Santvliet
-Description: In this script, weather data is used to predict the average capacity factor of wind turbines in Rotterdam. This is done using an Artificial Neural Network.
+Description: With this script, the hyperparameters of the ANN for a certain data set can tuned.
 '''
 
 import os
@@ -28,40 +28,20 @@ from sklearn.model_selection import GridSearchCV
 from playsound import playsound
 
 
-
 # suppress depreciation warnings
 import tensorflow.python.util.deprecation as deprecation
 deprecation._PRINT_DEPRECATION_WARNINGS = False
 
-print('Libraries Imported\n')
 
+# retrieve data of one of these three
 # X, y = fs.retrieveSolarData()
 # X, y = fs.retrieveWindData()
-X, y = fs.retrieveDemandData()
+# X, y = fs.retrieveDemandData()
 
-# print('X.shape:', X.shape)
-# print('y.shape:', y.shape)
-# print('X:\n', X)
-# print('y:\n', y)
-
-# print('the max of y is', np.max(y))
-# print('the mean of y is', np.mean(y))
-# print('the mean of nonzero y is', y[np.nonzero(y)].mean())
-# print('the std of y is', np.std(y))
-
-### check for nans present
-# k = 0
-# for i in X.flatten(): 
-#     if math.isnan(i): print('error in X at position ', k)
-#     k+=1
-# k = 0
-# for i in y: 
-#     if math.isnan(i): print('error in y at position ', k)
-#     k+=1
 
 # splitting data in test and training sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.3, random_state=42)
-# fs.printSets(X_train, X_test, y_train, y_test) # enable to print set shapes
+fs.printSets(X_train, X_test, y_train, y_test) # enable to print set shapes
 
 # checking and handling missing values 
 imp = sk.impute.SimpleImputer(missing_values=np.nan, strategy='median')
@@ -69,11 +49,7 @@ X = imp.fit_transform(X)
 X_train = imp.fit_transform(X_train)
 X_test = imp.fit_transform(X_test)
 
-### check for nans present
-k = 0
-for i in y: 
-    if math.isnan(i): print('error in X at position ', k)
-    k+=1
+
 # defining certain variables
 epochs = 1000
 batch_size = 500
@@ -122,38 +98,27 @@ def demandBaselineModel(neurons1=1, neurons2= 1, neurons3=1, neurons4=1, neurons
     model.compile(loss='mean_squared_error', optimizer='adam')
     return model
 
+# create the model of one of these three
 # model = KerasRegressor(build_fn=solarBaselineModel, epochs=epochs, batch_size=batch_size, verbose=verbose)
 # model = KerasRegressor(build_fn=windBaselineModel, epochs=epochs, batch_size=batch_size, verbose=verbose)
-model = KerasRegressor(build_fn=demandBaselineModel, epochs=epochs, batch_size=batch_size, verbose=verbose)
-
+# model = KerasRegressor(build_fn=demandBaselineModel, epochs=epochs, batch_size=batch_size, verbose=verbose)
 
 
 # define the grid search parameters
-# batch_size = [200, 500, 1000]
-# epochs = [10, 25, 50, 100, 200, 500, 1000, 2000]
-neurons1 = [150]
-neurons2 = [200]
-neurons3 = [50]
-neurons4 = [25]
+batch_size = [200, 500, 1000]
+epochs = [10, 25, 50, 100, 200, 500, 1000, 2000]
+
+neurons1 = [150, 300]
+neurons2 = [100, 200]
+neurons3 = [50, 100]
+neurons4 = [25, 50]
 neurons5 = [10, 20]
-# neurons1 = [150, 300]
-# neurons2 = [100, 200]
-# neurons3 = [50, 100]
-# neurons4 = [25, 50]
-# neurons5 = [10, 20]
 
-# neurons1 = [15, 20, 25]
-# neurons2 = [10, 15, 20, 25, 30]
+param_grid = dict(batch_size=batch_size, epochs=epochs, neurons1=neurons1, neurons2=neurons2, neurons3=neurons3, neurons4=neurons4, neurons5=neurons5)
 
 
-# param_grid = dict(neurons=neurons, batch_size=batch_size, epochs=epochs)
-# param_grid = dict(batch_size=batch_size, epochs=epochs)
-# param_grid = dict(neurons1=neurons1)
-# param_grid = dict(neurons1=neurons1, neurons2=neurons2)
-# param_grid = dict(neurons1=neurons1, neurons2=neurons2, neurons3=neurons3)
-param_grid = dict(neurons1=neurons1, neurons2=neurons2, neurons3=neurons3, neurons4=neurons4, neurons5=neurons5)
-
-
+# evaluate all combinations using 3-fold cross validation
+# from https://machinelearningmastery.com/grid-search-hyperparameters-deep-learning-models-python-keras/
 grid = GridSearchCV(estimator=model, param_grid=param_grid, n_jobs=-1, cv=3)
 grid_result = grid.fit(X, y)
 # summarize results

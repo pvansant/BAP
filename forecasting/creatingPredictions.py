@@ -1,6 +1,6 @@
 '''
 Authors: Aart Rozendaal and Pieter Van Santvliet
-Description: In this script, weather data is used to predict the average capacity factor of wind turbines in Rotterdam. This is done using an Artificial Neural Network.
+Description: In this script, ANN models are trained with a training set and evaluated on a test set.
 '''
 
 import os
@@ -32,13 +32,15 @@ import tensorflow.python.util.deprecation as deprecation
 deprecation._PRINT_DEPRECATION_WARNINGS = False
 
 
+# retrieve all input and output data
 X_s, y_s = fs.retrieveSolarData()
 X_w, y_w = fs.retrieveWindData()
 X_d, y_d = fs.retrieveDemandData()
 
+# check for nans in the output data
 if sum(np.isnan(y_s))+sum(np.isnan(y_w))+sum(np.isnan(y_d)) != 0: print('nans found')
 
-### scaling
+# scaling
 meanSunPower = 12.27*10**6/365/24 # average sun generation per hour
 y_s = meanSunPower/np.mean(y_s)*y_s # [Wh/hour] # scale the data
 
@@ -110,34 +112,37 @@ def demandBaselineModel():
     model.compile(loss='mean_squared_error', optimizer='adam')
     return model
 
-### solar
+# solar
 batch_size_s = 200
 epochs_s = 500
-### wind
+
+# wind
 batch_size_w = 200
 epochs_w = 200
-### demand
+
+# demand
 batch_size_d = 500
 epochs_d = 1000
 
+
+# combine base models, batch sizes, and epochs
 solarModel = KerasRegressor(build_fn=solarBaselineModel, epochs=epochs_s, batch_size=batch_size_s, verbose=verbose)
 windModel = KerasRegressor(build_fn=windBaselineModel, epochs=epochs_w, batch_size=batch_size_w, verbose=verbose)
 demandModel = KerasRegressor(build_fn=demandBaselineModel, epochs=epochs_d, batch_size=batch_size_d, verbose=verbose)
 
 
-### save the prediction
+# make predictions on the test set
 MSE_s = fs.trainWithoutCurve(X_train_s, y_train_s, X_test_s, y_test_s, solarModel)
 y_pred_s = solarModel.predict(X_s)
 
 MSE_w = fs.trainWithoutCurve(X_train_w, y_train_w, X_test_w, y_test_w, windModel)
 y_pred_w = windModel.predict(X_w)
 
-# np.save('y_pred_w',y_pred_w)
-
 MSE_d = fs.trainWithoutCurve(X_train_d, y_train_d, X_test_d, y_test_d, demandModel)
 y_pred_d = demandModel.predict(X_d)
 
 
+# print all results
 print('\n############################## SOLAR ##############################\n')
 fs.printTrainingResults(X_s, epochs_s, batch_size_s, n_splits, solarBaselineModel, MSE_s)
 print('Mean Error as fraction of Maximum:', abs(MSE_s)**0.5/np.max(y_s))

@@ -1,6 +1,6 @@
 '''
 Authors: Aart Rozendaal and Pieter Van Santvliet
-Description: In this script, weather data is used to predict the average capacity factor of wind turbines in Rotterdam. This is done using an Artificial Neural Network.
+Description: In this script, ANN models are trained with a training set and evaluated on a test set. The training set consists of the data of the previous hour: either the actual value or a prediction.
 '''
 
 import os
@@ -32,13 +32,15 @@ import tensorflow.python.util.deprecation as deprecation
 deprecation._PRINT_DEPRECATION_WARNINGS = False
 
 
+# retrieve all input and output data
 X_s, y_s = fs.retrieveSolarData()
 X_w, y_w = fs.retrieveWindData()
 X_d, y_d = fs.retrieveDemandData()
 
+# check for nans in the output data
 if sum(np.isnan(y_s))+sum(np.isnan(y_w))+sum(np.isnan(y_d)) != 0: print('nans found')
 
-### scaling
+# scaling
 meanSunPower = 12.27*10**6/365/24 # average sun generation per hour
 y_s = meanSunPower/np.mean(y_s)*y_s # [Wh/hour] # scale the data
 
@@ -46,7 +48,7 @@ meanWindPower = 10.87*10**6/365/24 # [W] # average wind generation per hour
 y_w = meanWindPower/np.mean(y_w)*y_w # [Wh/hour] # scale the data
 
 
-### adding the previous hour
+# adding data of the previous hour
 dataForControl = np.load('dataForControl.npz')
 # realSolar =     dataForControl['realSolar']
 # realWind =      dataForControl['realWind']
@@ -56,6 +58,7 @@ predSolar =     dataForControl['predSolar']
 predWind =      np.load('y_pred_w.npy')
 predDemand =    dataForControl['predDemand']
 
+# # using the actual previous hour
 # newFeature = np.delete(np.insert(y_s,0,y_s[0]),-1)[:,np.newaxis]
 # X_s = np.append(X_s, newFeature, axis=1)
 # newFeature = np.delete(np.insert(y_w,0,y_w[0]),-1)[:,np.newaxis]
@@ -63,6 +66,7 @@ predDemand =    dataForControl['predDemand']
 # newFeature = np.delete(np.insert(y_d,0,y_d[0]),-1)[:,np.newaxis]
 # X_d = np.append(X_d, newFeature, axis=1)
 
+# using the prediction of the previous hour
 newFeature = np.delete(np.insert(predSolar,0,predSolar[0]),-1)[:,np.newaxis]
 X_s = np.append(X_s, newFeature, axis=1)
 newFeature = np.delete(np.insert(predWind,0,predWind[0]),-1)[:,np.newaxis]
@@ -171,22 +175,26 @@ def demandBaselineModel():
     model.compile(loss='mean_squared_error', optimizer='adam')
     return model
 
-### solar
+# solar
 batch_size_s = 200
 epochs_s = 500
-### wind
+
+# wind
 batch_size_w = 200
 epochs_w = 200
-### demand
+
+# demand
 batch_size_d = 500
 epochs_d = 1000
 
+
+# combine base models, batch sizes, and epochs
 solarModel = KerasRegressor(build_fn=solarBaselineModel, epochs=epochs_s, batch_size=batch_size_s, verbose=verbose)
 windModel = KerasRegressor(build_fn=windBaselineModel, epochs=epochs_w, batch_size=batch_size_w, verbose=verbose)
 demandModel = KerasRegressor(build_fn=demandBaselineModel, epochs=epochs_d, batch_size=batch_size_d, verbose=verbose)
 
 
-### save the prediction
+# make predictions on the test set
 MSE_s = fs.trainWithoutCurve(X_train_s, y_train_s, X_test_s, y_test_s, solarModel)
 y_pred_s = solarModel.predict(X_s)
 
@@ -204,7 +212,7 @@ print(y_pred_w_week)
 y_pred_d_week = demandModel.predict(X_d_week)
 
 
-
+# print all results
 print('######################################################################')
 print('########################### WITH PREV HOUR ###########################')
 print('######################################################################')

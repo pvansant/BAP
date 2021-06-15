@@ -35,8 +35,8 @@ import matplotlib.pyplot as plt
 # wind = data1['windOutput']
 # demand = data1['demandOutput']
 
-data = np.load('dataForControl_with-previous-hour.npz')
-# data = np.load('dataForFigure.npz')
+# data = np.load('dataForControl_with-previous-hour.npz')
+data = np.load('dataForFigure.npz')
 
 realSolar =     data['realSolar']
 predSolar =     data['predSolar']

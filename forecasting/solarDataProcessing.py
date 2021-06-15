@@ -1,3 +1,9 @@
+'''
+Authors: Aart Rozendaal and Pieter Van Santvliet
+Description: In this script, the data of solar panels next to the EEMCS building is processed.
+'''
+
+
 print('\n\nrunning...\n')
 
 import numpy as np
@@ -6,9 +12,9 @@ import math
 
 
 
-data = np.load('tempData.npy')
-
-# data = np.genfromtxt('forecasting/generationData/2019Bikechargerdata_voltageandcurrentWithoutQuotes.csv', dtype=None, encoding=None, delimiter=',', skip_header=0, comments='#')
+# data = np.load('tempData.npy')
+# retrieve the data
+data = np.genfromtxt('forecasting/generationData/2019Bikechargerdata_voltageandcurrentWithoutQuotes.csv', dtype=None, encoding=None, delimiter=',', skip_header=0, comments='#')
 # note on the data: date, id, charger on/off, charge state, pv voltage, pv current, ...
 # np.save('tempData', arr=data) # saving the data (to decrease runtime)
 
